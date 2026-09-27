@@ -1,0 +1,6 @@
+Django>=5.2,<5.3
+djangorestframework>=3.16,<3.17
+psycopg[binary]>=3.2,<3.4
+reportlab>=4.2,<5
+pypdf>=5,<7
+Pillow>=11,<13

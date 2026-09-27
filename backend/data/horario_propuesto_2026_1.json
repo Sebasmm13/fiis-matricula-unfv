@@ -1,0 +1,2218 @@
+{
+  "institucion": "Universidad Nacional Federico Villarreal",
+  "facultad": "Facultad de Ingeniería Industrial y de Sistemas",
+  "escuela": "Escuela Profesional de Ingeniería de Sistemas",
+  "periodo": "2026-1",
+  "cursos": [
+    {
+      "ciclo": "I",
+      "seccion": "TC1",
+      "codigo": "100375",
+      "asignatura": "INGLÉS I",
+      "docente": null,
+      "aula": "LAB 1",
+      "sesiones": [
+        {
+          "dia": "Miércoles",
+          "inicio": "16:20",
+          "fin": "18:00"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "MA",
+      "codigo": "100375",
+      "asignatura": "INGLÉS I",
+      "docente": "DOCENTE 039",
+      "aula": "LAB 1",
+      "sesiones": [
+        {
+          "dia": "Viernes",
+          "inicio": "11:20",
+          "fin": "13:00"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "MA",
+      "codigo": "100549",
+      "asignatura": "LENGUAJE Y COMUNICACIÓN",
+      "docente": "DOCENTE 022",
+      "aula": "B-505",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "09:40",
+          "fin": "11:20"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "09:40",
+          "fin": "11:20"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "MA",
+      "codigo": "100550",
+      "asignatura": "FILOSOFÍA Y ÉTICA",
+      "docente": null,
+      "aula": "B-505",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "08:00",
+          "fin": "09:40"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "08:00",
+          "fin": "09:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "MA",
+      "codigo": "100553",
+      "asignatura": "FUNDAMENTOS DE CÁLCULO",
+      "docente": "CCNN",
+      "aula": "B-505",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "11:20",
+          "fin": "13:00"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "11:20",
+          "fin": "13:00"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "MA",
+      "codigo": "100551",
+      "asignatura": "METODOLOGIA DEL TRABAJO UNIVERSITARIO",
+      "docente": "DOCENTE 029",
+      "aula": "B-505",
+      "sesiones": [
+        {
+          "dia": "Viernes",
+          "inicio": "08:50",
+          "fin": "11:20"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "MA",
+      "codigo": "100552",
+      "asignatura": "ACTIVIDADES CULTURALES Y DEPORTIVAS",
+      "docente": null,
+      "aula": "B-505",
+      "sesiones": [
+        {
+          "dia": "Sábado",
+          "inicio": "08:00",
+          "fin": "09:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "MA",
+      "codigo": "104849",
+      "asignatura": "MATEMATICA",
+      "docente": "CCNN",
+      "aula": "B-505",
+      "sesiones": [
+        {
+          "dia": "Miércoles",
+          "inicio": "08:00",
+          "fin": "09:40"
+        },
+        {
+          "dia": "Viernes",
+          "inicio": "07:10",
+          "fin": "08:50"
+        },
+        {
+          "dia": "Viernes",
+          "inicio": "13:00",
+          "fin": "15:30"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "MA",
+      "codigo": "101512",
+      "asignatura": "INTRODUCCIÓN A LA INGENIERIA DE SISTEMAS",
+      "docente": "DOCENTE 027",
+      "aula": "B-505",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "13:00",
+          "fin": "14:40"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "13:00",
+          "fin": "15:30"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "MB",
+      "codigo": "100375",
+      "asignatura": "INGLÉS I",
+      "docente": "DOCENTE 039",
+      "aula": "LAB 1",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "08:00",
+          "fin": "09:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "MB",
+      "codigo": "100549",
+      "asignatura": "LENGUAJE Y COMUNICACIÓN",
+      "docente": "DOCENTE 039",
+      "aula": "B-504",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "11:20",
+          "fin": "13:00"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "08:00",
+          "fin": "09:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "MB",
+      "codigo": "100550",
+      "asignatura": "FILOSOFÍA Y ÉTICA",
+      "docente": "DOCENTE 044",
+      "aula": "B-504",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "09:40",
+          "fin": "11:20"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "09:40",
+          "fin": "11:20"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "MB",
+      "codigo": "100553",
+      "asignatura": "FUNDAMENTOS DE CALCULO",
+      "docente": "CCNN",
+      "aula": "B-504",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "13:00",
+          "fin": "14:40"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "11:20",
+          "fin": "13:00"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "MB",
+      "codigo": "100551",
+      "asignatura": "METODOLOGIA DEL TRABAJO UNIVERSITARIO",
+      "docente": "DOCENTE 022",
+      "aula": "B-504",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "14:40",
+          "fin": "16:20"
+        },
+        {
+          "dia": "Viernes",
+          "inicio": "10:30",
+          "fin": "13:00"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "MB",
+      "codigo": "100552",
+      "asignatura": "ACTIVIDADES CULTURALES Y DEPORTIVAS",
+      "docente": "CCNN",
+      "aula": "B-504",
+      "sesiones": [
+        {
+          "dia": "Sábado",
+          "inicio": "09:40",
+          "fin": "11:20"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "MB",
+      "codigo": "104849",
+      "asignatura": "MATEMATICA",
+      "docente": "DOCENTE 029",
+      "aula": "B-504",
+      "sesiones": [
+        {
+          "dia": "Miércoles",
+          "inicio": "09:40",
+          "fin": "11:20"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "13:00",
+          "fin": "14:40"
+        },
+        {
+          "dia": "Sábado",
+          "inicio": "07:10",
+          "fin": "09:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "MB",
+      "codigo": "101512",
+      "asignatura": "INTRODUCCIÓN A LA INGENIERIA DE SISTEMAS",
+      "docente": null,
+      "aula": "B-504",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "09:40",
+          "fin": "11:20"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "14:40",
+          "fin": "17:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "TC",
+      "codigo": "100549",
+      "asignatura": "LENGUAJE Y COMUNICACIÓN",
+      "docente": "DOCENTE 036",
+      "aula": "B-503",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "14:40",
+          "fin": "16:20"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "14:40",
+          "fin": "16:20"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "TC",
+      "codigo": "100550",
+      "asignatura": "FILOSOFÍA Y ÉTICA",
+      "docente": "DOCENTE 031",
+      "aula": "B-503",
+      "sesiones": [
+        {
+          "dia": "Miércoles",
+          "inicio": "14:40",
+          "fin": "16:20"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "13:00",
+          "fin": "14:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "TC",
+      "codigo": "100553",
+      "asignatura": "FUNDAMENTOS DE CÁLCULO",
+      "docente": "CCNN",
+      "aula": "B-503",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "13:00",
+          "fin": "14:40"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "16:20",
+          "fin": "18:00"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "TC",
+      "codigo": "100551",
+      "asignatura": "METODOLOGÍA DEL TRABAJO UNIVERSITARIO",
+      "docente": "DOCENTE 021",
+      "aula": "B-503",
+      "sesiones": [
+        {
+          "dia": "Viernes",
+          "inicio": "14:40",
+          "fin": "17:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "TC",
+      "codigo": "100552",
+      "asignatura": "ACTIVIDADES CULTURALES Y DEPORTIVAS",
+      "docente": null,
+      "aula": "B-503",
+      "sesiones": [
+        {
+          "dia": "Sábado",
+          "inicio": "14:40",
+          "fin": "16:20"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "TC",
+      "codigo": "104849",
+      "asignatura": "MATEMATICA",
+      "docente": "CCNN",
+      "aula": "B-503",
+      "sesiones": [
+        {
+          "dia": "Miércoles",
+          "inicio": "13:00",
+          "fin": "14:40"
+        },
+        {
+          "dia": "Viernes",
+          "inicio": "13:00",
+          "fin": "14:40"
+        },
+        {
+          "dia": "Sábado",
+          "inicio": "12:10",
+          "fin": "14:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "I",
+      "seccion": "TC",
+      "codigo": "101512",
+      "asignatura": "INTRODUCCIÓN A LA INGENIERIA DE SISTEMAS",
+      "docente": "DOCENTE 004",
+      "aula": "B-503",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "16:20",
+          "fin": "18:00"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "18:00",
+          "fin": "20:30"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MA",
+      "codigo": "100387",
+      "asignatura": "INGLÉS III",
+      "docente": "DOCENTE 039",
+      "aula": "LAB 1",
+      "sesiones": [
+        {
+          "dia": "Miércoles",
+          "inicio": "09:40",
+          "fin": "11:20"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MA",
+      "codigo": "100003",
+      "asignatura": "PSICOLOGIA ORGANIZACIONAL",
+      "docente": "DOCENTE 011",
+      "aula": "D-203",
+      "sesiones": [
+        {
+          "dia": "Viernes",
+          "inicio": "08:50",
+          "fin": "11:20"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MA",
+      "codigo": "103263",
+      "asignatura": "ESTADISTICA",
+      "docente": "DOCENTE 036",
+      "aula": "LAB 2",
+      "sesiones": [
+        {
+          "dia": "Viernes",
+          "inicio": "11:20",
+          "fin": "13:00"
+        },
+        {
+          "dia": "Sábado",
+          "inicio": "11:20",
+          "fin": "13:00"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MA",
+      "codigo": "100561",
+      "asignatura": "GEOPOLITICA Y REALIDAD NACIONAL",
+      "docente": "DOCENTE 036",
+      "aula": "D-203",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "11:20",
+          "fin": "13:00"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "11:20",
+          "fin": "13:00"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MA",
+      "codigo": "100377",
+      "asignatura": "METODOLOGIA DE LA INVESTIGACION CIENTIFICA",
+      "docente": "DOCENTE 029",
+      "aula": "D-203",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "09:40",
+          "fin": "11:20"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "09:40",
+          "fin": "11:20"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MA",
+      "codigo": "100835",
+      "asignatura": "FISICA",
+      "docente": "CCNN",
+      "aula": "LAB FISICA",
+      "sesiones": [
+        {
+          "dia": "Miércoles",
+          "inicio": "08:00",
+          "fin": "09:40"
+        },
+        {
+          "dia": "Viernes",
+          "inicio": "07:10",
+          "fin": "08:50"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MA",
+      "codigo": "101516",
+      "asignatura": "ECUACIONES DIFERENCIALES",
+      "docente": "CCNN",
+      "aula": "D-203",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "07:10",
+          "fin": "09:40"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "07:10",
+          "fin": "09:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MA",
+      "codigo": "101517",
+      "asignatura": "FUNDAMENTOS DE PROGRAMACION II",
+      "docente": "DOCENTE 021",
+      "aula": "LAB 2",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "13:00",
+          "fin": "14:40"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "13:00",
+          "fin": "14:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MB",
+      "codigo": "100387",
+      "asignatura": "INGLÉS III",
+      "docente": "DOCENTE 014",
+      "aula": "LAB 1",
+      "sesiones": [
+        {
+          "dia": "Jueves",
+          "inicio": "12:10",
+          "fin": "13:50"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MB",
+      "codigo": "100003",
+      "asignatura": "PSICOLOGIA ORGANIZACIONAL",
+      "docente": "DOCENTE 042",
+      "aula": "D-204",
+      "sesiones": [
+        {
+          "dia": "Viernes",
+          "inicio": "07:10",
+          "fin": "09:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MB",
+      "codigo": "103263",
+      "asignatura": "ESTADISTICA",
+      "docente": "DOCENTE 006",
+      "aula": "LAB 2",
+      "sesiones": [
+        {
+          "dia": "Miércoles",
+          "inicio": "11:20",
+          "fin": "13:00"
+        },
+        {
+          "dia": "Viernes",
+          "inicio": "09:40",
+          "fin": "11:20"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MB",
+      "codigo": "100561",
+      "asignatura": "GEOPOLITICA Y REALIDAD NACIONAL",
+      "docente": "DOCENTE 006",
+      "aula": "D-204",
+      "sesiones": [
+        {
+          "dia": "Jueves",
+          "inicio": "10:30",
+          "fin": "12:10"
+        },
+        {
+          "dia": "Viernes",
+          "inicio": "11:20",
+          "fin": "13:00"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MB",
+      "codigo": "100377",
+      "asignatura": "METODOLOGIA DE LA INVESTIGACION CIENTIFICA",
+      "docente": "DOCENTE 024",
+      "aula": "D-204",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "08:00",
+          "fin": "09:40"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "08:00",
+          "fin": "09:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MB",
+      "codigo": "100835",
+      "asignatura": "FISICA",
+      "docente": "CCNN",
+      "aula": "LAB FISICA",
+      "sesiones": [
+        {
+          "dia": "Miércoles",
+          "inicio": "09:40",
+          "fin": "11:20"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "13:50",
+          "fin": "15:30"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MB",
+      "codigo": "101516",
+      "asignatura": "ECUACIONES DIFERENCIALES",
+      "docente": "CCNN",
+      "aula": "D-204",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "09:40",
+          "fin": "12:10"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "15:30",
+          "fin": "18:00"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MB",
+      "codigo": "101517",
+      "asignatura": "FUNDAMENTOS DE PROGRAMACION II",
+      "docente": "DOCENTE 006",
+      "aula": "LAB 2",
+      "sesiones": [
+        {
+          "dia": "Miércoles",
+          "inicio": "08:00",
+          "fin": "09:40"
+        },
+        {
+          "dia": "Sábado",
+          "inicio": "08:00",
+          "fin": "09:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MC",
+      "codigo": "100387",
+      "asignatura": "INGLÉS III",
+      "docente": "DOCENTE 039",
+      "aula": "LAB 1",
+      "sesiones": [
+        {
+          "dia": "Miércoles",
+          "inicio": "14:40",
+          "fin": "16:20"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MC",
+      "codigo": "100003",
+      "asignatura": "PSICOLOGIA ORGANIZACIONAL",
+      "docente": "DOCENTE 022",
+      "aula": "D-308",
+      "sesiones": [
+        {
+          "dia": "Viernes",
+          "inicio": "13:00",
+          "fin": "15:30"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MC",
+      "codigo": "103263",
+      "asignatura": "ESTADISTICA",
+      "docente": "DOCENTE 028",
+      "aula": "LAB 2",
+      "sesiones": [
+        {
+          "dia": "Jueves",
+          "inicio": "14:40",
+          "fin": "16:20"
+        },
+        {
+          "dia": "Viernes",
+          "inicio": "15:30",
+          "fin": "17:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MC",
+      "codigo": "100561",
+      "asignatura": "GEOPOLITICA Y REALIDAD NACIONAL",
+      "docente": null,
+      "aula": "D-308",
+      "sesiones": [
+        {
+          "dia": "Miércoles",
+          "inicio": "16:20",
+          "fin": "18:00"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "16:20",
+          "fin": "18:00"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MC",
+      "codigo": "100377",
+      "asignatura": "METODOLOGIA DE LA INVESTIGACION CIENTIFICA",
+      "docente": "DOCENTE 003",
+      "aula": "D-308",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "14:40",
+          "fin": "16:20"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "13:00",
+          "fin": "14:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MC",
+      "codigo": "100835",
+      "asignatura": "FISICA",
+      "docente": "CCNN",
+      "aula": "LAB FISICA",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "13:00",
+          "fin": "14:40"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "13:00",
+          "fin": "14:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MC",
+      "codigo": "101516",
+      "asignatura": "ECUACIONES DIFERENCIALES",
+      "docente": "CCNN",
+      "aula": "D-308",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "10:30",
+          "fin": "13:00"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "10:30",
+          "fin": "13:00"
+        }
+      ]
+    },
+    {
+      "ciclo": "III",
+      "seccion": "MC",
+      "codigo": "101517",
+      "asignatura": "FUNDAMENTOS DE PROGRAMACION II",
+      "docente": "DOCENTE 034",
+      "aula": "LAB 2",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "16:20",
+          "fin": "18:00"
+        },
+        {
+          "dia": "Viernes",
+          "inicio": "17:10",
+          "fin": "18:50"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "TA",
+      "codigo": "101523",
+      "asignatura": "PROGRAMACION APLICADA II",
+      "docente": "DOCENTE 021",
+      "aula": "LAB 5",
+      "sesiones": [
+        {
+          "dia": "Miércoles",
+          "inicio": "16:20",
+          "fin": "18:00"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "16:20",
+          "fin": "18:00"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "TA",
+      "codigo": "101524",
+      "asignatura": "INGENIERIA DE COSTOS Y PRESUPUESTOS",
+      "docente": "DOCENTE 004",
+      "aula": "D-203",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "13:00",
+          "fin": "14:40"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "13:00",
+          "fin": "14:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "TA",
+      "codigo": "101525",
+      "asignatura": "FUNDAMENTO DE BASE DE DATOS",
+      "docente": "DOCENTE 041",
+      "aula": "LAB 5",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "16:20",
+          "fin": "18:00"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "14:40",
+          "fin": "16:20"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "TA",
+      "codigo": "101526",
+      "asignatura": "INGENIERIA DE PROCESOS DE NEGOCIOS",
+      "docente": "DOCENTE 030",
+      "aula": "B-505",
+      "sesiones": [
+        {
+          "dia": "Miércoles",
+          "inicio": "14:40",
+          "fin": "16:20"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "18:00",
+          "fin": "19:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "TA",
+      "codigo": "101527",
+      "asignatura": "SISTEMAS DIGITALES Y ARQUITECTURA DE COMPUTADORAS",
+      "docente": "DOCENTE 011",
+      "aula": "LAB ELEC",
+      "sesiones": [
+        {
+          "dia": "Miércoles",
+          "inicio": "13:00",
+          "fin": "14:40"
+        },
+        {
+          "dia": "Viernes",
+          "inicio": "13:00",
+          "fin": "14:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "TA",
+      "codigo": "101038",
+      "asignatura": "SISTEMAS OPERATIVOS",
+      "docente": "DOCENTE 034",
+      "aula": "LAB 5",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "14:40",
+          "fin": "16:20"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "18:00",
+          "fin": "19:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "TA",
+      "codigo": "101528",
+      "asignatura": "DINAMICA DE SISTEMAS",
+      "docente": "DOCENTE 044",
+      "aula": "LAB 5",
+      "sesiones": [
+        {
+          "dia": "Viernes",
+          "inicio": "14:40",
+          "fin": "17:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "TB",
+      "codigo": "101525",
+      "asignatura": "FUNDAMENTO DE BASE DE DATOS",
+      "docente": "DOCENTE 015",
+      "aula": "LAB 6",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "16:20",
+          "fin": "18:00"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "16:20",
+          "fin": "18:00"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "TB",
+      "codigo": "101523",
+      "asignatura": "PROGRAMACION APLICADA II",
+      "docente": "DOCENTE 034",
+      "aula": "LAB 6",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "14:40",
+          "fin": "16:20"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "16:20",
+          "fin": "18:00"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "TB",
+      "codigo": "101524",
+      "asignatura": "INGENIERIA DE COSTOS Y PRESUPUESTOS",
+      "docente": "DOCENTE 033",
+      "aula": "D-204",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "13:00",
+          "fin": "14:40"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "13:00",
+          "fin": "14:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "TB",
+      "codigo": "101526",
+      "asignatura": "INGENIERIA DE PROCESOS DE NEGOCIOS",
+      "docente": "DOCENTE 004",
+      "aula": "B-504",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "14:40",
+          "fin": "16:20"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "14:40",
+          "fin": "16:20"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "TB",
+      "codigo": "101527",
+      "asignatura": "SISTEMAS DIGITALES Y ARQUITECTURA DE COMPUTADORAS",
+      "docente": "DOCENTE 032",
+      "aula": "LAB 6",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "13:00",
+          "fin": "14:40"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "13:00",
+          "fin": "14:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "TB",
+      "codigo": "101038",
+      "asignatura": "SISTEMAS OPERATIVOS",
+      "docente": "DOCENTE 038",
+      "aula": "LAB 6",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "18:00",
+          "fin": "19:40"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "18:00",
+          "fin": "19:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "TB",
+      "codigo": "101528",
+      "asignatura": "DINAMICA DE SISTEMAS",
+      "docente": "DOCENTE 042",
+      "aula": "LAB 6",
+      "sesiones": [
+        {
+          "dia": "Viernes",
+          "inicio": "13:00",
+          "fin": "15:30"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "NC",
+      "codigo": "101523",
+      "asignatura": "PROGRAMACION APLICADA II",
+      "docente": "DOCENTE 044",
+      "aula": "LAB 1",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "20:30",
+          "fin": "22:10"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "20:30",
+          "fin": "22:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "NC",
+      "codigo": "101524",
+      "asignatura": "INGENIERIA DE COSTOS Y PRESUPUESTOS",
+      "docente": null,
+      "aula": "B-504",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "16:20",
+          "fin": "18:00"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "17:10",
+          "fin": "18:50"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "NC",
+      "codigo": "101525",
+      "asignatura": "FUNDAMENTO DE BASE DE DATOS",
+      "docente": null,
+      "aula": "LAB 1",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "20:30",
+          "fin": "22:10"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "18:50",
+          "fin": "20:30"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "NC",
+      "codigo": "101526",
+      "asignatura": "INGENIERIA DE PROCESOS DE NEGOCIOS",
+      "docente": "DOCENTE 002",
+      "aula": "B-504",
+      "sesiones": [
+        {
+          "dia": "Miércoles",
+          "inicio": "17:10",
+          "fin": "18:50"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "18:50",
+          "fin": "20:30"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "NC",
+      "codigo": "101527",
+      "asignatura": "SISTEMAS DIGITALES Y ARQUITECTURA DE COMPUTADORAS",
+      "docente": null,
+      "aula": "LAB ELEC",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "18:00",
+          "fin": "19:40"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "20:30",
+          "fin": "22:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "NC",
+      "codigo": "101038",
+      "asignatura": "SISTEMAS OPERATIVOS",
+      "docente": "DOCENTE 042",
+      "aula": "LAB 1",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "18:50",
+          "fin": "20:30"
+        },
+        {
+          "dia": "Viernes",
+          "inicio": "18:50",
+          "fin": "20:30"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "NC",
+      "codigo": "101528",
+      "asignatura": "DINAMICA DE SISTEMAS",
+      "docente": null,
+      "aula": "LAB 1",
+      "sesiones": [
+        {
+          "dia": "Viernes",
+          "inicio": "16:20",
+          "fin": "18:50"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "ME",
+      "codigo": "101554",
+      "asignatura": "FUNDAMENTOS DE JAVA (Electivo 1.1)",
+      "docente": "DOCENTE 010",
+      "aula": "LAB 1",
+      "sesiones": [
+        {
+          "dia": "Jueves",
+          "inicio": "17:50",
+          "fin": "20:20"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "ME",
+      "codigo": "101555",
+      "asignatura": "DATABASE DESIGN (Electivo 2.1)",
+      "docente": "DOCENTE 048",
+      "aula": "LAB 2",
+      "sesiones": [
+        {
+          "dia": "Viernes",
+          "inicio": "19:40",
+          "fin": "22:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "ME",
+      "codigo": null,
+      "asignatura": "CABLEADO ESTRUCTURADO (Electivo 3.1)",
+      "docente": "DOCENTE 046",
+      "aula": "LAB ELEC",
+      "sesiones": [
+        {
+          "dia": "Viernes",
+          "inicio": "17:10",
+          "fin": "19:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "ME",
+      "codigo": null,
+      "asignatura": "GESTIÓN DE PROCESOS DE NEGOCIOS - BPM (Electivo 4.1)",
+      "docente": "DOCENTE 023",
+      "aula": "LAB 3",
+      "sesiones": [
+        {
+          "dia": "Viernes",
+          "inicio": "14:40",
+          "fin": "17:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "V",
+      "seccion": "ME",
+      "codigo": null,
+      "asignatura": "ELECTRONICA BASICA Y SISTEMAS DIGITALES (Electivo 5.1)",
+      "docente": "DOCENTE 032",
+      "aula": "LAB FISICA",
+      "sesiones": [
+        {
+          "dia": "Sábado",
+          "inicio": "17:50",
+          "fin": "20:20"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NA",
+      "codigo": "101534",
+      "asignatura": "INGENIERÍA DE SOFTWARE",
+      "docente": "DOCENTE 017",
+      "aula": "B-503",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "17:10",
+          "fin": "18:50"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "17:10",
+          "fin": "18:50"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NA",
+      "codigo": "101490",
+      "asignatura": "INVESTIGACION APLICADA",
+      "docente": null,
+      "aula": "B-505",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "17:10",
+          "fin": "18:50"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "18:50",
+          "fin": "20:30"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NA",
+      "codigo": "101535",
+      "asignatura": "ADMINISTRACION Y GESTION DE BASE DE DATOS",
+      "docente": "DOCENTE 018",
+      "aula": "LAB 2",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "18:50",
+          "fin": "20:30"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "20:30",
+          "fin": "22:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NA",
+      "codigo": "101536",
+      "asignatura": "PLANEAMIENTO DE RECURSOS EMPRESARIALES",
+      "docente": "DOCENTE 015",
+      "aula": "B-503",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "20:30",
+          "fin": "22:10"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "20:30",
+          "fin": "22:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NA",
+      "codigo": "101537",
+      "asignatura": "ARQUITECTURA Y CONECTIVIDAD DE REDES",
+      "docente": "DOCENTE 040",
+      "aula": "B-503",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "18:50",
+          "fin": "20:30"
+        },
+        {
+          "dia": "Viernes",
+          "inicio": "18:50",
+          "fin": "20:30"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NA",
+      "codigo": "101538",
+      "asignatura": "INGENIERIA DEL CONOCIMIENTO",
+      "docente": "DOCENTE 040",
+      "aula": "B-503",
+      "sesiones": [
+        {
+          "dia": "Sábado",
+          "inicio": "19:40",
+          "fin": "22:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NA",
+      "codigo": "104848",
+      "asignatura": "SIMULACION DE SISTEMAS",
+      "docente": "DOCENTE 009",
+      "aula": "LAB 2",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "20:30",
+          "fin": "22:10"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "18:50",
+          "fin": "20:30"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NB",
+      "codigo": "101534",
+      "asignatura": "INGENIERÍA DE SOFTWARE",
+      "docente": "DOCENTE 048",
+      "aula": "D-203",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "17:10",
+          "fin": "18:50"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "17:10",
+          "fin": "18:50"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NB",
+      "codigo": "101490",
+      "asignatura": "INVESTIGACION APLICADA",
+      "docente": "DOCENTE 010",
+      "aula": "D-203",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "17:10",
+          "fin": "18:50"
+        },
+        {
+          "dia": "Martes",
+          "inicio": "18:50",
+          "fin": "20:30"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NB",
+      "codigo": "101535",
+      "asignatura": "ADMINISTRACION Y GESTION DE BASE DE DATOS",
+      "docente": "DOCENTE 046",
+      "aula": "LAB 3",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "20:30",
+          "fin": "22:10"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "18:50",
+          "fin": "20:30"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NB",
+      "codigo": "101536",
+      "asignatura": "PLANEAMIENTO DE RECURSOS EMPRESARIALES",
+      "docente": "DOCENTE 002",
+      "aula": "D-203",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "20:30",
+          "fin": "22:10"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "20:30",
+          "fin": "22:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NB",
+      "codigo": "101537",
+      "asignatura": "ARQUITECTURA Y CONECTIVIDAD DE REDES",
+      "docente": "DOCENTE 031",
+      "aula": "D-203",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "18:50",
+          "fin": "20:30"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "18:50",
+          "fin": "20:30"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NB",
+      "codigo": "101538",
+      "asignatura": "INGENIERIA DEL CONOCIMIENTO",
+      "docente": "DOCENTE 009",
+      "aula": "D-203",
+      "sesiones": [
+        {
+          "dia": "Viernes",
+          "inicio": "19:40",
+          "fin": "22:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NB",
+      "codigo": "104848",
+      "asignatura": "SIMULACION DE SISTEMAS",
+      "docente": "DOCENTE 024",
+      "aula": "LAB 3",
+      "sesiones": [
+        {
+          "dia": "Sábado",
+          "inicio": "20:30",
+          "fin": "22:10"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "20:30",
+          "fin": "22:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NC",
+      "codigo": "101534",
+      "asignatura": "INGENIERÍA DE SOFTWARE",
+      "docente": "DOCENTE 048",
+      "aula": "D-204",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "18:50",
+          "fin": "20:30"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "18:50",
+          "fin": "20:30"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NC",
+      "codigo": "101490",
+      "asignatura": "INVESTIGACION APLICADA",
+      "docente": "DOCENTE 038",
+      "aula": "D-204",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "17:10",
+          "fin": "18:50"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "18:00",
+          "fin": "19:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NC",
+      "codigo": "101535",
+      "asignatura": "ADMINISTRACION Y GESTION DE BASE DE DATOS",
+      "docente": "DOCENTE 015",
+      "aula": "LAB 3",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "18:50",
+          "fin": "20:30"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "20:30",
+          "fin": "22:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NC",
+      "codigo": "101536",
+      "asignatura": "PLANEAMIENTO DE RECURSOS EMPRESARIALES",
+      "docente": "DOCENTE 018",
+      "aula": "D-204",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "20:30",
+          "fin": "22:10"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "20:30",
+          "fin": "22:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NC",
+      "codigo": "101537",
+      "asignatura": "ARQUITECTURA Y CONECTIVIDAD DE REDES",
+      "docente": "DOCENTE 038",
+      "aula": "D-204",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "20:30",
+          "fin": "22:10"
+        },
+        {
+          "dia": "Viernes",
+          "inicio": "18:50",
+          "fin": "20:30"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NC",
+      "codigo": "101538",
+      "asignatura": "INGENIERIA DEL CONOCIMIENTO",
+      "docente": "DOCENTE 017",
+      "aula": "D-204",
+      "sesiones": [
+        {
+          "dia": "Sábado",
+          "inicio": "19:40",
+          "fin": "22:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NC",
+      "codigo": "104848",
+      "asignatura": "SIMULACION DE SISTEMAS",
+      "docente": "DOCENTE 031",
+      "aula": "LAB 3",
+      "sesiones": [
+        {
+          "dia": "Miércoles",
+          "inicio": "17:10",
+          "fin": "18:50"
+        },
+        {
+          "dia": "Viernes",
+          "inicio": "20:30",
+          "fin": "22:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NE",
+      "codigo": null,
+      "asignatura": "Desarrollo de aplicaciones empresariales Web (Electivo 1.3)",
+      "docente": "DOCENTE 042",
+      "aula": "LAB 1",
+      "sesiones": [
+        {
+          "dia": "Sábado",
+          "inicio": "10:30",
+          "fin": "13:00"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NE",
+      "codigo": null,
+      "asignatura": "Programming with PL/SQL (Electivo 2.3)",
+      "docente": "DOCENTE 023",
+      "aula": "LAB 1",
+      "sesiones": [
+        {
+          "dia": "Sábado",
+          "inicio": "16:00",
+          "fin": "18:30"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NE",
+      "codigo": null,
+      "asignatura": "Interconectividad WAN (Electivo 3.3)",
+      "docente": "DOCENTE 046",
+      "aula": "LAB 2",
+      "sesiones": [
+        {
+          "dia": "Sábado",
+          "inicio": "13:00",
+          "fin": "15:30"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "NE",
+      "codigo": null,
+      "asignatura": "Gestión de Proyectos y Fundamentos - PMBOOK (Electivo 4.4)",
+      "docente": "DOCENTE 041",
+      "aula": "LAB 2",
+      "sesiones": [
+        {
+          "dia": "Sábado",
+          "inicio": "18:30",
+          "fin": "21:00"
+        }
+      ]
+    },
+    {
+      "ciclo": "VII",
+      "seccion": "ME",
+      "codigo": null,
+      "asignatura": "Robótica (Electivo 5.5)",
+      "docente": "DOCENTE 007",
+      "aula": "LAB 3",
+      "sesiones": [
+        {
+          "dia": "Sábado",
+          "inicio": "10:30",
+          "fin": "13:00"
+        }
+      ]
+    },
+    {
+      "ciclo": "IX",
+      "seccion": "NA",
+      "codigo": "101543",
+      "asignatura": "TALLER DE TESIS II",
+      "docente": "DOCENTE 023",
+      "aula": "D-308",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "18:00",
+          "fin": "19:40"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "18:00",
+          "fin": "19:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "IX",
+      "seccion": "NA",
+      "codigo": "101544",
+      "asignatura": "EVALUACION DE PROYECTOS DE TI",
+      "docente": "DOCENTE 023",
+      "aula": "D-308",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "16:20",
+          "fin": "18:00"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "19:40",
+          "fin": "21:20"
+        }
+      ]
+    },
+    {
+      "ciclo": "IX",
+      "seccion": "NA",
+      "codigo": "101545",
+      "asignatura": "TOPICOS ESPECIALES DE BIGDATA",
+      "docente": "DOCENTE 023",
+      "aula": "D-308",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "18:50",
+          "fin": "20:30"
+        },
+        {
+          "dia": "Martes",
+          "inicio": "19:40",
+          "fin": "21:20"
+        }
+      ]
+    },
+    {
+      "ciclo": "IX",
+      "seccion": "NA",
+      "codigo": "101546",
+      "asignatura": "ARQUITECTURA EMPRESARIAL",
+      "docente": "DOCENTE 009",
+      "aula": "D-308",
+      "sesiones": [
+        {
+          "dia": "Sábado",
+          "inicio": "19:40",
+          "fin": "22:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "IX",
+      "seccion": "NA",
+      "codigo": "101547",
+      "asignatura": "CIBERSEGURIDAD",
+      "docente": "DOCENTE 018",
+      "aula": "D-308",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "20:30",
+          "fin": "22:10"
+        },
+        {
+          "dia": "Lunes",
+          "inicio": "17:10",
+          "fin": "18:50"
+        }
+      ]
+    },
+    {
+      "ciclo": "IX",
+      "seccion": "NA",
+      "codigo": "101548",
+      "asignatura": "PRACTICAS PRE-PROFESIONALES I",
+      "docente": "DOCENTE 025",
+      "aula": "D-308",
+      "sesiones": [
+        {
+          "dia": "Viernes",
+          "inicio": "18:50",
+          "fin": "22:10"
+        },
+        {
+          "dia": "Sábado",
+          "inicio": "10:30",
+          "fin": "13:50"
+        }
+      ]
+    },
+    {
+      "ciclo": "IX",
+      "seccion": "NB",
+      "codigo": "101543",
+      "asignatura": "TALLER DE TESIS II",
+      "docente": "DOCENTE 010",
+      "aula": "B-505",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "20:30",
+          "fin": "22:10"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "17:10",
+          "fin": "18:50"
+        }
+      ]
+    },
+    {
+      "ciclo": "IX",
+      "seccion": "NB",
+      "codigo": "101544",
+      "asignatura": "EVALUACION DE PROYECTOS DE TI",
+      "docente": "DOCENTE 006",
+      "aula": "LAB ELEC",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "16:20",
+          "fin": "18:00"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "19:40",
+          "fin": "21:20"
+        }
+      ]
+    },
+    {
+      "ciclo": "IX",
+      "seccion": "NB",
+      "codigo": "101545",
+      "asignatura": "TOPICOS ESPECIALES DE BIGDATA",
+      "docente": "DOCENTE 040",
+      "aula": "D-203",
+      "sesiones": [
+        {
+          "dia": "Sábado",
+          "inicio": "18:00",
+          "fin": "19:40"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "17:10",
+          "fin": "18:50"
+        }
+      ]
+    },
+    {
+      "ciclo": "IX",
+      "seccion": "NB",
+      "codigo": "101546",
+      "asignatura": "ARQUITECTURA EMPRESARIAL",
+      "docente": "DOCENTE 010",
+      "aula": "LAB ELEC",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "19:40",
+          "fin": "22:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "IX",
+      "seccion": "NB",
+      "codigo": "101547",
+      "asignatura": "CIBERSEGURIDAD",
+      "docente": "DOCENTE 046",
+      "aula": "D-203",
+      "sesiones": [
+        {
+          "dia": "Sábado",
+          "inicio": "20:30",
+          "fin": "22:10"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "20:30",
+          "fin": "22:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "IX",
+      "seccion": "NB",
+      "codigo": "101548",
+      "asignatura": "PRACTICAS PRE-PROFESIONALES I",
+      "docente": "DOCENTE 003",
+      "aula": "B-505",
+      "sesiones": [
+        {
+          "dia": "Viernes",
+          "inicio": "18:50",
+          "fin": "22:10"
+        },
+        {
+          "dia": "Sábado",
+          "inicio": "10:30",
+          "fin": "13:50"
+        }
+      ]
+    },
+    {
+      "ciclo": "IX",
+      "seccion": "NC",
+      "codigo": "101543",
+      "asignatura": "TALLER DE TESIS II",
+      "docente": "DOCENTE 025",
+      "aula": "LAB 2",
+      "sesiones": [
+        {
+          "dia": "Martes",
+          "inicio": "19:40",
+          "fin": "21:20"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "18:50",
+          "fin": "20:30"
+        }
+      ]
+    },
+    {
+      "ciclo": "IX",
+      "seccion": "NC",
+      "codigo": "101544",
+      "asignatura": "EVALUACION DE PROYECTOS DE TI",
+      "docente": "DOCENTE 009",
+      "aula": "LAB 2",
+      "sesiones": [
+        {
+          "dia": "Miércoles",
+          "inicio": "17:10",
+          "fin": "18:50"
+        },
+        {
+          "dia": "Jueves",
+          "inicio": "17:10",
+          "fin": "18:50"
+        }
+      ]
+    },
+    {
+      "ciclo": "IX",
+      "seccion": "NC",
+      "codigo": "101545",
+      "asignatura": "TOPICOS ESPECIALES DE BIGDATA",
+      "docente": "DOCENTE 011",
+      "aula": "B-504",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "20:30",
+          "fin": "22:10"
+        },
+        {
+          "dia": "Martes",
+          "inicio": "18:00",
+          "fin": "19:40"
+        }
+      ]
+    },
+    {
+      "ciclo": "IX",
+      "seccion": "NC",
+      "codigo": "101546",
+      "asignatura": "ARQUITECTURA EMPRESARIAL",
+      "docente": "DOCENTE 011",
+      "aula": "LAB 2",
+      "sesiones": [
+        {
+          "dia": "Lunes",
+          "inicio": "16:20",
+          "fin": "18:50"
+        }
+      ]
+    },
+    {
+      "ciclo": "IX",
+      "seccion": "NC",
+      "codigo": "101547",
+      "asignatura": "CIBERSEGURIDAD",
+      "docente": "DOCENTE 010",
+      "aula": "B-504",
+      "sesiones": [
+        {
+          "dia": "Sábado",
+          "inicio": "18:50",
+          "fin": "20:30"
+        },
+        {
+          "dia": "Miércoles",
+          "inicio": "20:30",
+          "fin": "22:10"
+        }
+      ]
+    },
+    {
+      "ciclo": "IX",
+      "seccion": "NC",
+      "codigo": "101548",
+      "asignatura": "PRACTICAS PRE-PROFESIONALES I",
+      "docente": "DOCENTE 007",
+      "aula": "B-504",
+      "sesiones": [
+        {
+          "dia": "Viernes",
+          "inicio": "18:50",
+          "fin": "22:10"
+        },
+        {
+          "dia": "Sábado",
+          "inicio": "13:00",
+          "fin": "16:20"
+        }
+      ]
+    }
+  ]
+}

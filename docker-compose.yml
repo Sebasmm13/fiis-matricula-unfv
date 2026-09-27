@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: fiis_matricula
+      POSTGRES_USER: fiis
+      POSTGRES_PASSWORD: fiis_local
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - fiis_postgres:/var/lib/postgresql/data
+volumes:
+  fiis_postgres:
