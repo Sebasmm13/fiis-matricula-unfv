@@ -199,51 +199,56 @@ class Command(BaseCommand):
         for r in unmatched:
             self.stdout.write(f"  REVISAR {r['period']} fila {r['row']} {r['name']} / {r['section']}")
         if options["demo_users"]:
-            admin, created = User.objects.get_or_create(
-                username="admin.demo", defaults={"is_staff": True, "is_superuser": True}
-            )
-            if created:
-                admin.set_password("AdminDemo2026!")
-                admin.save()
-            if not admin.email:
-                admin.email = "admin.demo@unfv.edu.pe"
-                admin.save(update_fields=["email"])
-            user, created = User.objects.get_or_create(username="alumno.demo")
-            if created:
-                user.set_password("AlumnoDemo2026!")
+            demo, _ = User.objects.get_or_create(username="demo")
+            demo.email = "demo@unfv.edu.pe"
+            demo.is_staff = True
+            demo.is_superuser = True
+            demo.set_password("demo")
+            demo.save()
+            demo_student = Student.objects.filter(student_code="DEMO2026001").first()
+            if demo_student:
+                demo_student.user = demo
+                demo_student.save(update_fields=["user"])
+            else:
+                demo_student = Student.objects.create(
+                    user=demo, student_code="DEMO2026001", full_name="Alumno de demostración", plan=plan
+                )
+
+            # Migra instalaciones creadas con las tres cuentas demo antiguas.
+            legacy_usernames = ["alumno.demo", "admin.demo", "docente.demo"]
+            Teacher.objects.filter(user__username__in=legacy_usernames).update(user=None)
+            User.objects.filter(username__in=legacy_usernames).update(is_active=False)
+
+            student_codes = ["2024023935", "2024023953", "2024024193", "2024035007", "2024024406"]
+            students = [demo_student]
+            for code in student_codes:
+                user, _ = User.objects.get_or_create(username=code)
+                user.email = f"{code}@unfv.edu.pe"
+                user.set_password(code)
                 user.save()
-            if not user.email:
-                user.email = "alumno.demo@unfv.edu.pe"
-                user.save(update_fields=["email"])
-            student, _ = Student.objects.get_or_create(
-                user=user, defaults={"student_code": "DEMO2026001", "full_name": "Alumno de demostración", "plan": plan}
-            )
+                student = Student.objects.filter(student_code=code).first()
+                if student:
+                    if student.user_id != user.id:
+                        student.user = user
+                        student.save(update_fields=["user"])
+                else:
+                    student = Student.objects.create(
+                        user=user, student_code=code, full_name=f"Alumno {code}", plan=plan
+                    )
+                students.append(student)
+
             example = (
                 Section.objects.filter(period__code="2026-2", teacher__isnull=False, teacher__user__isnull=True)
                 .select_related("teacher")
                 .first()
             )
-            if example and not Teacher.objects.filter(user__username="docente.demo").exists():
-                demo_teacher, created = User.objects.get_or_create(username="docente.demo")
-                if created:
-                    demo_teacher.set_password("DocenteDemo2026!")
-                    demo_teacher.save()
-                example.teacher.user = demo_teacher
+            if example and not Teacher.objects.filter(user=demo).exists():
+                example.teacher.user = demo
                 example.teacher.save(update_fields=["user"])
-            demo_teacher = User.objects.filter(username="docente.demo").first()
-            if demo_teacher and not demo_teacher.email:
-                demo_teacher.email = "docente.demo@unfv.edu.pe"
-                demo_teacher.save(update_fields=["email"])
-            if not hasattr(admin, "teacher"):
-                admin_teacher = (
-                    Teacher.objects.filter(user__isnull=True, section__period__code="2026-2").distinct().first()
-                )
-                if admin_teacher:
-                    admin_teacher.user = admin
-                    admin_teacher.save(update_fields=["user"])
             prev = Period.objects.get(code="2026-1")
-            for course in Course.objects.filter(plan=plan, semester=1):
-                FinalGrade.objects.get_or_create(
-                    student=student, course=course, period=prev, defaults={"score": 15, "passed": True}
-                )
+            for student in students:
+                for course in Course.objects.filter(plan=plan, semester=1):
+                    FinalGrade.objects.get_or_create(
+                        student=student, course=course, period=prev, defaults={"score": 15, "passed": True}
+                    )
             self.stdout.write("Cuentas DEMO activadas. Cambia sus contraseñas antes de usar datos reales.")

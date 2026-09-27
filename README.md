@@ -45,11 +45,16 @@ Para Linux/macOS: sustituye `py` por `python3`, la activación por `source .venv
 
 Se crean **únicamente** al pasar `--demo-users`:
 
-| Perfil | Correo | Contraseña |
+| Perfil | Usuario o correo | Contraseña |
 | --- | --- | --- |
-| Alumno | `alumno.demo@unfv.edu.pe` | `AlumnoDemo2026!` |
-| Administrador y docente | `admin.demo@unfv.edu.pe` | `AdminDemo2026!` |
-| Docente con una sección asignada en 2026-2 | `docente.demo@unfv.edu.pe` | `DocenteDemo2026!` |
+| Alumno, docente y administrador | `demo` | `demo` |
+| Alumno | `2024023935@unfv.edu.pe` | `2024023935` |
+| Alumno | `2024023953@unfv.edu.pe` | `2024023953` |
+| Alumno | `2024024193@unfv.edu.pe` | `2024024193` |
+| Alumno | `2024035007@unfv.edu.pe` | `2024035007` |
+| Alumno | `2024024406@unfv.edu.pe` | `2024024406` |
+
+La cuenta `demo` tiene los tres perfiles y muestra el selector de acceso después de iniciar sesión. Las cuentas numéricas tienen aprobados los cursos del primer ciclo para poder probar la prematrícula del segundo ciclo.
 
 La importación es idempotente: se puede repetir y no sobrescribe cambios hechos en registros ya importados. **Si ya importaste la entrega anterior**, ejecutar el comando otra vez no cambiará sus sesiones existentes; para probar esta propuesta usa una base nueva o revisa y modifica los horarios desde administración. Cambia las contraseñas para cualquier entorno accesible a otras personas; en despliegues reales usa una clave secreta larga, `DJANGO_DEBUG=0`, HTTPS, credenciales nuevas, política de copias de seguridad y un método de autenticación institucional.
 
@@ -62,7 +67,7 @@ La importación es idempotente: se puede repetir y no sobrescribe cambios hechos
 5. Para observar el límite de vacantes, el administrador puede modificar la capacidad de una sección antes de que los alumnos se inscriban.
 6. Entra como **docente** para consultar los horarios y los alumnos que ya confirmaron matrícula en tus secciones; exporta un PDF por sección o uno completo. Cada perfil puede actualizar su propia foto en **Mi perfil**.
 
-**Nota:** si durante una prueba ya confirmaste la matrícula de `alumno.demo`, crea otro alumno para repetirla en el mismo período. El sistema impide una segunda confirmación y deja las rectificaciones para administración.
+**Nota:** si durante una prueba una cuenta ya confirmó su matrícula, usa otra de las cuentas de alumno para repetir el flujo en el mismo período. El sistema impide una segunda confirmación y deja las rectificaciones para administración.
 
 ## Datos importados y decisiones de modelado
 

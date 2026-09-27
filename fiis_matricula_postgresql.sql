@@ -9,10 +9,13 @@ BEGIN;
 
 TRUNCATE TABLE "auth_group", "auth_user", "core_period", "core_plan", "django_content_type", "django_session", "auth_permission", "auth_user_groups", "core_auditlog", "core_course", "core_profilephoto", "core_student", "core_teacher", "django_admin_log", "auth_group_permissions", "auth_user_user_permissions", "core_course_prerequisites", "core_enrollment", "core_finalgrade", "core_section", "core_enrollmentline", "core_meeting", "core_preselection" RESTART IDENTITY CASCADE;
 
--- auth_user: 3 filas
-INSERT INTO "auth_user" ("id", "password", "last_login", "is_superuser", "username", "last_name", "email", "is_staff", "is_active", "date_joined", "first_name") VALUES (1, 'pbkdf2_sha256$1000000$hFi9eK3TAQNYI2dGr8Qu27$Dgmb2YjzaQBsvfFiapy6Rs0SFFXRV3CfS5aq5DZ8NR4=', NULL, TRUE, 'admin.demo', '', 'admin.demo@unfv.edu.pe', TRUE, TRUE, '2026-09-27 04:04:05.148724', '');
-INSERT INTO "auth_user" ("id", "password", "last_login", "is_superuser", "username", "last_name", "email", "is_staff", "is_active", "date_joined", "first_name") VALUES (2, 'pbkdf2_sha256$1000000$8mTpoWbjlKfGG8YZfTSvyt$PHeSVY3yHKV3lw+1jjFBslYZ0soErs3dFbJVTjzIG3Y=', NULL, FALSE, 'alumno.demo', '', 'alumno.demo@unfv.edu.pe', FALSE, TRUE, '2026-09-27 04:04:05.813007', '');
-INSERT INTO "auth_user" ("id", "password", "last_login", "is_superuser", "username", "last_name", "email", "is_staff", "is_active", "date_joined", "first_name") VALUES (3, 'pbkdf2_sha256$1000000$NUI33ex2ZZ09IR3395chuc$YmWpuNGMzbrKSKlheD779cLvpnuQ6ujI7MF3mYezT7A=', NULL, FALSE, 'docente.demo', '', 'docente.demo@unfv.edu.pe', FALSE, TRUE, '2026-09-27 04:04:06.483002', '');
+-- auth_user: 6 filas
+INSERT INTO "auth_user" ("id", "password", "last_login", "is_superuser", "username", "last_name", "email", "is_staff", "is_active", "date_joined", "first_name") VALUES (1, 'pbkdf2_sha256$1000000$EAMHONjreFepovdTPExNf2$swT1WJUfrykf5XocEnAwXqL+hb/GvykISpZAka0Dsg4=', NULL, TRUE, 'demo', '', 'demo@unfv.edu.pe', TRUE, TRUE, '2026-09-27 04:13:20.502092', '');
+INSERT INTO "auth_user" ("id", "password", "last_login", "is_superuser", "username", "last_name", "email", "is_staff", "is_active", "date_joined", "first_name") VALUES (2, 'pbkdf2_sha256$1000000$q9rIIpkNNlqjaFeDRtwE3A$dXhjsWrUG6CNBAw6m04Vmyj7UfqYr3UAXDgYuUTo+w0=', NULL, FALSE, '2024023935', '', '2024023935@unfv.edu.pe', FALSE, TRUE, '2026-09-27 04:13:21.169583', '');
+INSERT INTO "auth_user" ("id", "password", "last_login", "is_superuser", "username", "last_name", "email", "is_staff", "is_active", "date_joined", "first_name") VALUES (3, 'pbkdf2_sha256$1000000$sTiNCcwoKY3bV90NdwSjy4$DdM6rIEJyvLeXLXem9XqYJKId/XdFHKGdnG4EzPoNWM=', NULL, FALSE, '2024023953', '', '2024023953@unfv.edu.pe', FALSE, TRUE, '2026-09-27 04:13:21.889579', '');
+INSERT INTO "auth_user" ("id", "password", "last_login", "is_superuser", "username", "last_name", "email", "is_staff", "is_active", "date_joined", "first_name") VALUES (4, 'pbkdf2_sha256$1000000$QEfWHPg0YE6JbvtfnGs99U$Oq19jqq5twSoHhcW9AyOHCKc9zy9pNbOUZZg45B7j8k=', NULL, FALSE, '2024024193', '', '2024024193@unfv.edu.pe', FALSE, TRUE, '2026-09-27 04:13:22.589862', '');
+INSERT INTO "auth_user" ("id", "password", "last_login", "is_superuser", "username", "last_name", "email", "is_staff", "is_active", "date_joined", "first_name") VALUES (5, 'pbkdf2_sha256$1000000$2LU8tGwAksCxv26gaVSalg$tyR92+GblvBitmDMkzQPNgYISl4moQlJjN+Qvc/El1k=', NULL, FALSE, '2024035007', '', '2024035007@unfv.edu.pe', FALSE, TRUE, '2026-09-27 04:13:23.269837', '');
+INSERT INTO "auth_user" ("id", "password", "last_login", "is_superuser", "username", "last_name", "email", "is_staff", "is_active", "date_joined", "first_name") VALUES (6, 'pbkdf2_sha256$1000000$kYdGRAMEmgcjZNtsPSLv9q$O6x6lNomWiWDa0WDn5jXBTDht5oB0ptks2iL/tEhGTE=', NULL, FALSE, '2024024406', '', '2024024406@unfv.edu.pe', FALSE, TRUE, '2026-09-27 04:13:23.919845', '');
 
 -- core_period: 2 filas
 INSERT INTO "core_period" ("id", "code", "status", "max_credits", "pre_start", "pre_end", "enroll_start", "enroll_end", "is_current") VALUES (1, '2026-1', 'closed', 24, NULL, NULL, NULL, NULL, FALSE);
@@ -207,12 +210,17 @@ INSERT INTO "core_course" ("id", "curricular_code", "name", "semester", "credits
 INSERT INTO "core_course" ("id", "curricular_code", "name", "semester", "credits", "theory_hours", "practice_hours", "elective_track", "plan_id") VALUES (84, 'E-5.2', 'Sistemas Embebidos', 6, NULL, NULL, NULL, 'Mención 5: Robótica y Sistemas Embebidos', 1);
 INSERT INTO "core_course" ("id", "curricular_code", "name", "semester", "credits", "theory_hours", "practice_hours", "elective_track", "plan_id") VALUES (85, 'E-5.5', 'Robótica', 7, NULL, NULL, NULL, 'Mención 5: Robótica y Sistemas Embebidos', 1);
 
--- core_student: 1 filas
-INSERT INTO "core_student" ("id", "student_code", "full_name", "active", "plan_id", "user_id") VALUES (1, 'DEMO2026001', 'Alumno de demostración', TRUE, 1, 2);
+-- core_student: 6 filas
+INSERT INTO "core_student" ("id", "student_code", "full_name", "active", "plan_id", "user_id") VALUES (1, 'DEMO2026001', 'Alumno de demostración', TRUE, 1, 1);
+INSERT INTO "core_student" ("id", "student_code", "full_name", "active", "plan_id", "user_id") VALUES (2, '2024023935', 'Alumno 2024023935', TRUE, 1, 2);
+INSERT INTO "core_student" ("id", "student_code", "full_name", "active", "plan_id", "user_id") VALUES (3, '2024023953', 'Alumno 2024023953', TRUE, 1, 3);
+INSERT INTO "core_student" ("id", "student_code", "full_name", "active", "plan_id", "user_id") VALUES (4, '2024024193', 'Alumno 2024024193', TRUE, 1, 4);
+INSERT INTO "core_student" ("id", "student_code", "full_name", "active", "plan_id", "user_id") VALUES (5, '2024035007', 'Alumno 2024035007', TRUE, 1, 5);
+INSERT INTO "core_student" ("id", "student_code", "full_name", "active", "plan_id", "user_id") VALUES (6, '2024024406', 'Alumno 2024024406', TRUE, 1, 6);
 
 -- core_teacher: 49 filas
-INSERT INTO "core_teacher" ("id", "name", "active", "user_id") VALUES (1, 'DOCENTE 039', TRUE, 3);
-INSERT INTO "core_teacher" ("id", "name", "active", "user_id") VALUES (2, 'DOCENTE 022', TRUE, 1);
+INSERT INTO "core_teacher" ("id", "name", "active", "user_id") VALUES (1, 'DOCENTE 039', TRUE, 1);
+INSERT INTO "core_teacher" ("id", "name", "active", "user_id") VALUES (2, 'DOCENTE 022', TRUE, NULL);
 INSERT INTO "core_teacher" ("id", "name", "active", "user_id") VALUES (3, 'DOCENTE 029', TRUE, NULL);
 INSERT INTO "core_teacher" ("id", "name", "active", "user_id") VALUES (4, 'DOCENTE 027', TRUE, NULL);
 INSERT INTO "core_teacher" ("id", "name", "active", "user_id") VALUES (5, 'DOCENTE 044', TRUE, NULL);
@@ -332,7 +340,7 @@ INSERT INTO "core_course_prerequisites" ("id", "from_course_id", "to_course_id")
 INSERT INTO "core_course_prerequisites" ("id", "from_course_id", "to_course_id") VALUES (68, 84, 83);
 INSERT INTO "core_course_prerequisites" ("id", "from_course_id", "to_course_id") VALUES (69, 85, 84);
 
--- core_finalgrade: 8 filas
+-- core_finalgrade: 48 filas
 INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (1, 15, TRUE, 1, 1, 1);
 INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (2, 15, TRUE, 2, 1, 1);
 INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (3, 15, TRUE, 3, 1, 1);
@@ -341,6 +349,46 @@ INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id"
 INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (6, 15, TRUE, 6, 1, 1);
 INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (7, 15, TRUE, 7, 1, 1);
 INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (8, 15, TRUE, 8, 1, 1);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (9, 15, TRUE, 1, 1, 2);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (10, 15, TRUE, 2, 1, 2);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (11, 15, TRUE, 3, 1, 2);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (12, 15, TRUE, 4, 1, 2);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (13, 15, TRUE, 5, 1, 2);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (14, 15, TRUE, 6, 1, 2);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (15, 15, TRUE, 7, 1, 2);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (16, 15, TRUE, 8, 1, 2);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (17, 15, TRUE, 1, 1, 3);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (18, 15, TRUE, 2, 1, 3);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (19, 15, TRUE, 3, 1, 3);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (20, 15, TRUE, 4, 1, 3);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (21, 15, TRUE, 5, 1, 3);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (22, 15, TRUE, 6, 1, 3);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (23, 15, TRUE, 7, 1, 3);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (24, 15, TRUE, 8, 1, 3);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (25, 15, TRUE, 1, 1, 4);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (26, 15, TRUE, 2, 1, 4);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (27, 15, TRUE, 3, 1, 4);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (28, 15, TRUE, 4, 1, 4);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (29, 15, TRUE, 5, 1, 4);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (30, 15, TRUE, 6, 1, 4);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (31, 15, TRUE, 7, 1, 4);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (32, 15, TRUE, 8, 1, 4);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (33, 15, TRUE, 1, 1, 5);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (34, 15, TRUE, 2, 1, 5);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (35, 15, TRUE, 3, 1, 5);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (36, 15, TRUE, 4, 1, 5);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (37, 15, TRUE, 5, 1, 5);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (38, 15, TRUE, 6, 1, 5);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (39, 15, TRUE, 7, 1, 5);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (40, 15, TRUE, 8, 1, 5);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (41, 15, TRUE, 1, 1, 6);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (42, 15, TRUE, 2, 1, 6);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (43, 15, TRUE, 3, 1, 6);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (44, 15, TRUE, 4, 1, 6);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (45, 15, TRUE, 5, 1, 6);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (46, 15, TRUE, 6, 1, 6);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (47, 15, TRUE, 7, 1, 6);
+INSERT INTO "core_finalgrade" ("id", "score", "passed", "course_id", "period_id", "student_id") VALUES (48, 15, TRUE, 8, 1, 6);
 
 -- core_section: 219 filas
 INSERT INTO "core_section" ("id", "section_code", "official_code", "raw_name", "cycle", "classroom", "capacity", "published", "source_row", "course_id", "period_id", "teacher_id") VALUES (1, 'TC1', '100375', 'INGLÉS I', 'I', 'LAB 1', 35, TRUE, '1', 1, 1, NULL);

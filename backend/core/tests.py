@@ -133,11 +133,14 @@ class EnrollmentRulesTests(TestCase):
 class SeedTests(TestCase):
     def test_new_plan_preserves_course_prerequisites(self):
         call_command("seed_fiis", "--demo-users", stdout=StringIO())
-        self.assertEqual(User.objects.get(username="docente.demo").teacher.active, True)
+        self.assertEqual(User.objects.get(username="demo").teacher.active, True)
         call_command("seed_fiis", "--demo-users", stdout=StringIO())
-        self.assertEqual(Teacher.objects.filter(user__username="docente.demo").count(), 1)
+        self.assertEqual(Teacher.objects.filter(user__username="demo").count(), 1)
+        student_codes = ["2024023935", "2024023953", "2024024193", "2024035007", "2024024406"]
+        self.assertEqual(Student.objects.filter(student_code__in=student_codes).count(), 5)
+        self.assertTrue(User.objects.get(username="2024023935").check_password("2024023935"))
         original = Plan.objects.get(name="Ingeniería de Sistemas - malla adjunta")
-        self.client.force_login(User.objects.get(username="admin.demo"))
+        self.client.force_login(User.objects.get(username="demo"))
         import json
 
         response = self.client.post(
@@ -243,7 +246,7 @@ class EndToEndApiTests(TestCase):
         token = client.get("/api/auth/csrf/").json()["csrfToken"]
         response = client.post(
             "/api/auth/login/",
-            data='{"username":"alumno.demo","password":"AlumnoDemo2026!"}',
+            data='{"email":"2024023935@unfv.edu.pe","password":"2024023935"}',
             content_type="application/json",
             HTTP_X_CSRFTOKEN=token,
         )
@@ -271,12 +274,12 @@ class EndToEndApiTests(TestCase):
         token = client.get("/api/auth/csrf/").json()["csrfToken"]
         admin_login = client.post(
             "/api/auth/login/",
-            data='{"email":"admin.demo@unfv.edu.pe","password":"AdminDemo2026!"}',
+            data='{"username":"demo","password":"demo"}',
             content_type="application/json",
             HTTP_X_CSRFTOKEN=token,
         )
         self.assertEqual(admin_login.status_code, 200)
-        self.assertEqual(set(admin_login.json()["roles"]), {"admin", "teacher"})
+        self.assertEqual(set(admin_login.json()["roles"]), {"admin", "teacher", "student"})
         self.assertIsNone(admin_login.json()["role"])
         token = client.get("/api/auth/csrf/").json()["csrfToken"]
         selected_role = client.post(
@@ -299,7 +302,7 @@ class EndToEndApiTests(TestCase):
         self.assertEqual(
             client.post(
                 "/api/auth/login/",
-                data='{"username":"alumno.demo","password":"AlumnoDemo2026!"}',
+                data='{"email":"2024023935@unfv.edu.pe","password":"2024023935"}',
                 content_type="application/json",
                 HTTP_X_CSRFTOKEN=token,
             ).status_code,

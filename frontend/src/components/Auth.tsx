@@ -68,13 +68,13 @@ export function Login({ onLogin }: { onLogin: (identity: Identity) => void }) {
           </p>
           <form onSubmit={submit}>
             <label>
-              Correo institucional
+              Correo institucional o usuario
               <input
-                type="email"
+                type="text"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 required
-                placeholder="nombre@unfv.edu.pe"
+                placeholder="codigo@unfv.edu.pe o demo"
                 autoComplete="username"
               />
             </label>
