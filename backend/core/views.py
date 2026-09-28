@@ -1,8 +1,7 @@
 import json
 from io import BytesIO
 
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import default_token_generator
@@ -23,8 +22,8 @@ from rest_framework.views import APIView
 
 from .access import available_roles, identity, need_admin, need_student, need_teacher
 from .models import (
-    AuditLog,
     AccountSecurity,
+    AuditLog,
     Course,
     Enrollment,
     EnrollmentLine,
@@ -901,10 +900,10 @@ class AdminStudent(APIView):
             pending = not bool(password)
             user.is_active = not pending
             user.save(update_fields=["is_active"])
-            student = Student.objects.create(user=user, student_code=code, full_name=name, plan=plan, active=not pending)
-            AccountSecurity.objects.create(
-                user=user, must_change_password=bool(password), activation_pending=pending
+            student = Student.objects.create(
+                user=user, student_code=code, full_name=name, plan=plan, active=not pending
             )
+            AccountSecurity.objects.create(user=user, must_change_password=bool(password), activation_pending=pending)
         audit(request.user, "alumno.creado", student)
         return Response({"id": student.pk}, status=201)
 
@@ -920,7 +919,10 @@ class AdminStudent(APIView):
             student.full_name = name
         if "email" in request.data:
             email = str(request.data["email"]).strip().lower()
-            if not email.endswith("@unfv.edu.pe") or User.objects.exclude(pk=student.user_id).filter(email__iexact=email).exists():
+            if (
+                not email.endswith("@unfv.edu.pe")
+                or User.objects.exclude(pk=student.user_id).filter(email__iexact=email).exists()
+            ):
                 raise ValidationError("Correo institucional inválido o repetido.")
             student.user.email = email
         if "active" in request.data:
@@ -932,7 +934,9 @@ class AdminStudent(APIView):
             password = request.data["temporary_password"]
             validate_new_password(password, student.user)
             student.user.set_password(password)
-            AccountSecurity.objects.update_or_create(user=student.user, defaults={"must_change_password": True, "activation_pending": False})
+            AccountSecurity.objects.update_or_create(
+                user=student.user, defaults={"must_change_password": True, "activation_pending": False}
+            )
             student.active = True
             student.user.is_active = True
         if request.data.get("enable_activation") is True:

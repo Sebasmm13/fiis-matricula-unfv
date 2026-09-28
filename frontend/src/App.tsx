@@ -303,7 +303,13 @@ export default function App() {
   );
 }
 
-function PasswordChange({ onChanged, onLogout }: { onChanged: (me: Identity) => void; onLogout: () => void }) {
+function PasswordChange({
+  onChanged,
+  onLogout,
+}: {
+  onChanged: (me: Identity) => void;
+  onLogout: () => void;
+}) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -315,22 +321,70 @@ function PasswordChange({ onChanged, onLogout }: { onChanged: (me: Identity) => 
         <div className="login-card">
           <span className="eyebrow">SEGURIDAD DE LA CUENTA</span>
           <h2>Crea una contraseña personal</h2>
-          <p>La contraseña inicial es temporal. Debes reemplazarla antes de continuar.</p>
-          <form onSubmit={async (e) => {
-            e.preventDefault();
-            if (newPassword !== confirm) { setError("Las contraseñas nuevas no coinciden."); return; }
-            setBusy(true); setError("");
-            try { onChanged(await api<Identity>("/auth/change-password/", "POST", { current_password: currentPassword, new_password: newPassword })); }
-            catch (requestError) { setError(explain(requestError)); }
-            finally { setBusy(false); }
-          }}>
-            <label>Contraseña inicial<input type="password" required value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} /></label>
-            <label>Nueva contraseña<input type="password" required minLength={12} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} /></label>
-            <label>Confirmar contraseña<input type="password" required minLength={12} value={confirm} onChange={(e) => setConfirm(e.target.value)} /></label>
+          <p>
+            La contraseña inicial es temporal. Debes reemplazarla antes de
+            continuar.
+          </p>
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (newPassword !== confirm) {
+                setError("Las contraseñas nuevas no coinciden.");
+                return;
+              }
+              setBusy(true);
+              setError("");
+              try {
+                onChanged(
+                  await api<Identity>("/auth/change-password/", "POST", {
+                    current_password: currentPassword,
+                    new_password: newPassword,
+                  }),
+                );
+              } catch (requestError) {
+                setError(explain(requestError));
+              } finally {
+                setBusy(false);
+              }
+            }}
+          >
+            <label>
+              Contraseña inicial
+              <input
+                type="password"
+                required
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+              />
+            </label>
+            <label>
+              Nueva contraseña
+              <input
+                type="password"
+                required
+                minLength={12}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+            </label>
+            <label>
+              Confirmar contraseña
+              <input
+                type="password"
+                required
+                minLength={12}
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+              />
+            </label>
             {error && <div className="alert error">{error}</div>}
-            <button className="btn primary wide" disabled={busy}>{busy ? "Guardando..." : "Cambiar contraseña"}</button>
+            <button className="btn primary wide" disabled={busy}>
+              {busy ? "Guardando..." : "Cambiar contraseña"}
+            </button>
           </form>
-          <button className="text-button" onClick={onLogout}>Cerrar sesión</button>
+          <button className="text-button" onClick={onLogout}>
+            Cerrar sesión
+          </button>
         </div>
       </div>
     </div>
@@ -1470,10 +1524,16 @@ function AdminPage({
                               )
                             }
                           >
-                            <option value="" disabled>Asignar docente...</option>
-                            {data.teachers.filter((t) => t.active).map((t) => (
-                              <option key={t.id} value={t.id}>{t.name}</option>
-                            ))}
+                            <option value="" disabled>
+                              Asignar docente...
+                            </option>
+                            {data.teachers
+                              .filter((t) => t.active)
+                              .map((t) => (
+                                <option key={t.id} value={t.id}>
+                                  {t.name}
+                                </option>
+                              ))}
                           </select>
                           <small>
                             {s.meetings
@@ -1695,12 +1755,77 @@ function AdminPage({
                       </td>
                       <td>
                         <small>{s.email}</small>
-                        {s.activation_pending && <Badge kind="warn">Pendiente de activación</Badge>}
+                        {s.activation_pending && (
+                          <Badge kind="warn">Pendiente de activación</Badge>
+                        )}
                         <div className="account-actions">
-                          <button onClick={() => { const name = window.prompt("Nombre completo", s.full_name); if (name) void submit(`/admin/students/${s.id}/`, "PATCH", { full_name: name }, "Nombre actualizado"); }}>Editar</button>
-                          <button onClick={() => void submit(`/admin/students/${s.id}/`, "PATCH", { active: !s.active }, s.active ? "Cuenta suspendida" : "Cuenta reactivada")}>{s.active ? "Suspender" : "Reactivar"}</button>
-                          <button onClick={() => { const password = window.prompt("Contraseña temporal (mínimo 12 caracteres)"); if (password) void submit(`/admin/students/${s.id}/`, "PATCH", { temporary_password: password }, "Contraseña temporal creada"); }}>Restablecer clave</button>
-                          <button disabled={s.activation_pending} onClick={() => { if (window.confirm(`¿Habilitar la activación para ${s.full_name}? Su contraseña actual dejará de funcionar.`)) void submit(`/admin/students/${s.id}/`, "PATCH", { enable_activation: true }, "Activación habilitada; el alumno ya puede crear su cuenta"); }}>{s.activation_pending ? "Activación pendiente" : "Habilitar activación"}</button>
+                          <button
+                            onClick={() => {
+                              const name = window.prompt(
+                                "Nombre completo",
+                                s.full_name,
+                              );
+                              if (name)
+                                void submit(
+                                  `/admin/students/${s.id}/`,
+                                  "PATCH",
+                                  { full_name: name },
+                                  "Nombre actualizado",
+                                );
+                            }}
+                          >
+                            Editar
+                          </button>
+                          <button
+                            onClick={() =>
+                              void submit(
+                                `/admin/students/${s.id}/`,
+                                "PATCH",
+                                { active: !s.active },
+                                s.active
+                                  ? "Cuenta suspendida"
+                                  : "Cuenta reactivada",
+                              )
+                            }
+                          >
+                            {s.active ? "Suspender" : "Reactivar"}
+                          </button>
+                          <button
+                            onClick={() => {
+                              const password = window.prompt(
+                                "Contraseña temporal (mínimo 12 caracteres)",
+                              );
+                              if (password)
+                                void submit(
+                                  `/admin/students/${s.id}/`,
+                                  "PATCH",
+                                  { temporary_password: password },
+                                  "Contraseña temporal creada",
+                                );
+                            }}
+                          >
+                            Restablecer clave
+                          </button>
+                          <button
+                            disabled={s.activation_pending}
+                            onClick={() => {
+                              if (
+                                window.confirm(
+                                  `¿Habilitar la activación para ${s.full_name}? Su contraseña actual dejará de funcionar.`,
+                                )
+                              )
+                                void submit(
+                                  `/admin/students/${s.id}/`,
+                                  "PATCH",
+                                  { enable_activation: true },
+                                  "Activación habilitada; el alumno ya puede crear su cuenta",
+                                );
+                            }}
+                          >
+                            {s.activation_pending
+                              ? "Activación pendiente"
+                              : "Habilitar activación"}
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -1796,7 +1921,9 @@ function CourseEditor({
           {course.prerequisites.map((p) => p.code).join(", ") || "ninguno"}
         </small>
         <Badge kind={course.academic_data_verified ? "good" : "warn"}>
-          {course.academic_data_verified ? "Datos verificados" : "Pendiente de validación académica"}
+          {course.academic_data_verified
+            ? "Datos verificados"
+            : "Pendiente de validación académica"}
         </Badge>
       </div>
       <div className="editor-fields">
@@ -1852,7 +1979,9 @@ function CourseEditor({
               theory_hours: theory ? Number(theory) : null,
               practice_hours: practice ? Number(practice) : null,
               prerequisite_ids: found.map((x) => x!.id),
-              academic_data_verified: Boolean(credits && theory !== "" && practice !== ""),
+              academic_data_verified: Boolean(
+                credits && theory !== "" && practice !== "",
+              ),
             });
           }}
         >
@@ -2149,7 +2278,9 @@ function NewStudent({
             password,
             plan_id: plan,
           },
-          password ? "Alumno registrado con cambio de clave obligatorio" : "Alumno creado; ya puede activar su cuenta",
+          password
+            ? "Alumno registrado con cambio de clave obligatorio"
+            : "Alumno creado; ya puede activar su cuenta",
         );
         setCode("");
         setName("");
@@ -2191,7 +2322,10 @@ function NewStudent({
           onChange={(e) => setPassword(e.target.value)}
         />
       </label>
-      <small>Si queda vacía, el alumno activará su cuenta con código, correo y nombre completo.</small>
+      <small>
+        Si queda vacía, el alumno activará su cuenta con código, correo y nombre
+        completo.
+      </small>
       <label>
         Plan
         <select value={plan} onChange={(e) => setPlan(Number(e.target.value))}>
@@ -2299,84 +2433,148 @@ function NewTeacher({
   const [password, setPassword] = useState("");
   return (
     <>
-    <form
-      className="teacher-account-form"
-      onSubmit={(e) => {
-        e.preventDefault();
-        void submit(
-          "/admin/teachers/",
-          "POST",
-          { name, email, password },
-          "Acceso docente vinculado",
-        );
-        setName("");
-        setEmail("");
-        setPassword("");
-      }}
-    >
-      <div className="eyebrow">ACCESO DOCENTE</div>
-      <p>
-        Vincula un docente por correo. Si el correo ya pertenece a un
-        administrador, conservará ambos perfiles.
-      </p>
-      <div className="grid-form">
-        <label>
-          Nombre del docente
-          <input
-            list="teachers-without-account"
-            required
-            minLength={5}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <datalist id="teachers-without-account">
+      <form
+        className="teacher-account-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          void submit(
+            "/admin/teachers/",
+            "POST",
+            { name, email, password },
+            "Acceso docente vinculado",
+          );
+          setName("");
+          setEmail("");
+          setPassword("");
+        }}
+      >
+        <div className="eyebrow">ACCESO DOCENTE</div>
+        <p>
+          Vincula un docente por correo. Si el correo ya pertenece a un
+          administrador, conservará ambos perfiles.
+        </p>
+        <div className="grid-form">
+          <label>
+            Nombre del docente
+            <input
+              list="teachers-without-account"
+              required
+              minLength={5}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <datalist id="teachers-without-account">
+              {teachers
+                .filter((t) => !t.username)
+                .map((t) => (
+                  <option key={t.id} value={t.name} />
+                ))}
+            </datalist>
+          </label>
+          <label>
+            Correo institucional
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="off"
+            />
+          </label>
+          <label>
+            Contraseña inicial
+            <input
+              type="password"
+              minLength={12}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+            />
+            <small>Solo para correos nuevos.</small>
+          </label>
+          <button className="btn outline">Vincular acceso</button>
+        </div>
+      </form>
+      <div className="table-wrap inner">
+        <table>
+          <thead>
+            <tr>
+              <th>Docente</th>
+              <th>Correo</th>
+              <th>Estado</th>
+              <th>Administrar</th>
+            </tr>
+          </thead>
+          <tbody>
             {teachers
-              .filter((t) => !t.username)
+              .filter((t) => t.username)
               .map((t) => (
-                <option key={t.id} value={t.name} />
+                <tr key={t.id}>
+                  <td>
+                    <strong>{t.name}</strong>
+                  </td>
+                  <td>{t.email}</td>
+                  <td>
+                    <Badge kind={t.active ? "good" : "warn"}>
+                      {t.active ? "Activo" : "Suspendido"}
+                    </Badge>
+                  </td>
+                  <td>
+                    <div className="account-actions">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const name = window.prompt("Nombre completo", t.name);
+                          if (name)
+                            void submit(
+                              `/admin/teachers/${t.id}/`,
+                              "PATCH",
+                              { name },
+                              "Docente actualizado",
+                            );
+                        }}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          void submit(
+                            `/admin/teachers/${t.id}/`,
+                            "PATCH",
+                            { active: !t.active },
+                            t.active
+                              ? "Cuenta suspendida"
+                              : "Cuenta reactivada",
+                          )
+                        }
+                      >
+                        {t.active ? "Suspender" : "Reactivar"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const password = window.prompt(
+                            "Contraseña temporal (mínimo 12 caracteres)",
+                          );
+                          if (password)
+                            void submit(
+                              `/admin/teachers/${t.id}/`,
+                              "PATCH",
+                              { temporary_password: password },
+                              "Contraseña temporal creada",
+                            );
+                        }}
+                      >
+                        Restablecer clave
+                      </button>
+                    </div>
+                  </td>
+                </tr>
               ))}
-          </datalist>
-        </label>
-        <label>
-          Correo institucional
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="off"
-          />
-        </label>
-        <label>
-          Contraseña inicial
-          <input
-            type="password"
-            minLength={12}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="new-password"
-          />
-          <small>Solo para correos nuevos.</small>
-        </label>
-        <button className="btn outline">Vincular acceso</button>
+          </tbody>
+        </table>
       </div>
-    </form>
-    <div className="table-wrap inner">
-      <table>
-        <thead><tr><th>Docente</th><th>Correo</th><th>Estado</th><th>Administrar</th></tr></thead>
-        <tbody>{teachers.filter((t) => t.username).map((t) => (
-          <tr key={t.id}>
-            <td><strong>{t.name}</strong></td><td>{t.email}</td>
-            <td><Badge kind={t.active ? "good" : "warn"}>{t.active ? "Activo" : "Suspendido"}</Badge></td>
-            <td><div className="account-actions">
-              <button type="button" onClick={() => { const name = window.prompt("Nombre completo", t.name); if (name) void submit(`/admin/teachers/${t.id}/`, "PATCH", { name }, "Docente actualizado"); }}>Editar</button>
-              <button type="button" onClick={() => void submit(`/admin/teachers/${t.id}/`, "PATCH", { active: !t.active }, t.active ? "Cuenta suspendida" : "Cuenta reactivada")}>{t.active ? "Suspender" : "Reactivar"}</button>
-              <button type="button" onClick={() => { const password = window.prompt("Contraseña temporal (mínimo 12 caracteres)"); if (password) void submit(`/admin/teachers/${t.id}/`, "PATCH", { temporary_password: password }, "Contraseña temporal creada"); }}>Restablecer clave</button>
-            </div></td>
-          </tr>
-        ))}</tbody>
-      </table>
-    </div>
     </>
   );
 }
