@@ -10,6 +10,7 @@ from pypdf import PdfReader
 from rest_framework.exceptions import ValidationError
 
 from .models import (
+    AccountSecurity,
     Course,
     Enrollment,
     EnrollmentLine,
@@ -139,6 +140,17 @@ class SeedTests(TestCase):
         student_codes = ["2024023935", "2024023953", "2024024193", "2024035007", "2024024406"]
         self.assertEqual(Student.objects.filter(student_code__in=student_codes).count(), 5)
         self.assertTrue(User.objects.get(username="2024023935").check_password("2024023935"))
+        teacher_credentials = {
+            "rojas@unfv.edu.pe": "Rojas",
+            "cano@unfv.edu.pe": "Cano",
+            "peterlik@unfv.edu.pe": "Peterlik",
+            "salazar@unfv.edu.pe": "Salazar",
+        }
+        for email, password in teacher_credentials.items():
+            user = User.objects.get(email=email)
+            self.assertTrue(user.check_password(password))
+            self.assertTrue(hasattr(user, "teacher"))
+        self.assertTrue(User.objects.get(email="salazar@unfv.edu.pe").is_staff)
         original = Plan.objects.get(name="Ingeniería de Sistemas - malla adjunta")
         self.client.force_login(User.objects.get(username="demo"))
         import json
@@ -236,6 +248,25 @@ class SeedTests(TestCase):
 
 
 class EndToEndApiTests(TestCase):
+    def test_student_can_activate_account_and_set_full_name(self):
+        call_command("seed_fiis", "--demo-users", stdout=StringIO())
+        user = User.objects.get(username="2024023935")
+        user.set_unusable_password()
+        user.is_active = False
+        user.save()
+        user.student.active = False
+        user.student.save(update_fields=["active"])
+        AccountSecurity.objects.update_or_create(user=user, defaults={"activation_pending": True})
+        response = self.client.post(
+            "/api/auth/activate/",
+            data='{"student_code":"2024023935","email":"2024023935@unfv.edu.pe","full_name":"María Alumna Villarreal","password":"ClaveNueva2026!"}',
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        user.refresh_from_db()
+        self.assertTrue(user.check_password("ClaveNueva2026!"))
+        self.assertEqual(user.student.full_name, "María Alumna Villarreal")
+
     def test_student_preference_admin_demand_enrollment_and_receipt(self):
         call_command("seed_fiis", "--demo-users", stdout=StringIO())
         from django.test import Client

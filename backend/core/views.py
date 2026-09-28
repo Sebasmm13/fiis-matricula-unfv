@@ -2,11 +2,19 @@ import json
 from io import BytesIO
 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.tokens import default_token_generator
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.core.mail import send_mail
 from django.db import transaction
 from django.db.models import Count
 from django.http import HttpResponse, JsonResponse
 from django.middleware.csrf import get_token
+from django.utils import timezone
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from rest_framework.exceptions import NotFound, PermissionDenied, ValidationError
 from rest_framework.parsers import FormParser, MultiPartParser
@@ -16,6 +24,7 @@ from rest_framework.views import APIView
 from .access import available_roles, identity, need_admin, need_student, need_teacher
 from .models import (
     AuditLog,
+    AccountSecurity,
     Course,
     Enrollment,
     EnrollmentLine,
@@ -71,6 +80,121 @@ def login_view(request):
     else:
         request.session.pop("active_role", None)
     return JsonResponse(identity(user, request.session.get("active_role")))
+
+
+def validate_new_password(password, user=None):
+    try:
+        validate_password(password, user=user)
+    except DjangoValidationError as exc:
+        raise ValidationError({"password": list(exc.messages)})
+
+
+@csrf_protect
+def change_password(request):
+    if request.method != "POST" or not request.user.is_authenticated:
+        return JsonResponse({"detail": "Método no permitido"}, status=405)
+    body = json.loads(request.body or "{}")
+    if not request.user.check_password(body.get("current_password", "")):
+        return JsonResponse({"detail": "La contraseña actual no es correcta."}, status=400)
+    password = body.get("new_password", "")
+    try:
+        validate_new_password(password, request.user)
+    except ValidationError as exc:
+        return JsonResponse({"detail": exc.detail}, status=400)
+    request.user.set_password(password)
+    request.user.save(update_fields=["password"])
+    security, _ = AccountSecurity.objects.get_or_create(user=request.user)
+    security.must_change_password = False
+    security.activation_pending = False
+    security.password_changed_at = timezone.now()
+    security.save()
+    update_session_auth_hash(request, request.user)
+    audit(request.user, "cuenta.contrasena_cambiada", request.user.username)
+    return JsonResponse(identity(request.user, request.session.get("active_role")))
+
+
+@csrf_protect
+def activate_student(request):
+    if request.method != "POST":
+        return JsonResponse({"detail": "Método no permitido"}, status=405)
+    body = json.loads(request.body or "{}")
+    code = str(body.get("student_code", "")).strip()
+    email = str(body.get("email", "")).strip().lower()
+    name = " ".join(str(body.get("full_name", "")).split())
+    student = Student.objects.select_related("user").filter(student_code=code, user__email__iexact=email).first()
+    security = getattr(student.user, "security", None) if student else None
+    if not student or not security or not security.activation_pending or len(name) < 5:
+        return JsonResponse({"detail": "Los datos no coinciden con una cuenta pendiente de activación."}, status=400)
+    password = body.get("password", "")
+    try:
+        validate_new_password(password, student.user)
+    except ValidationError as exc:
+        return JsonResponse({"detail": exc.detail}, status=400)
+    with transaction.atomic():
+        student.full_name = name
+        student.active = True
+        student.save(update_fields=["full_name", "active"])
+        student.user.set_password(password)
+        student.user.is_active = True
+        student.user.save(update_fields=["password", "is_active"])
+        security.activation_pending = False
+        security.must_change_password = False
+        security.password_changed_at = timezone.now()
+        security.save()
+        audit(student.user, "cuenta.alumno_activada", student)
+    return JsonResponse({"ok": True})
+
+
+@csrf_protect
+def password_reset_request(request):
+    if request.method != "POST":
+        return JsonResponse({"detail": "Método no permitido"}, status=405)
+    body = json.loads(request.body or "{}")
+    user = User.objects.filter(email__iexact=str(body.get("email", "")).strip(), is_active=True).first()
+    response = {"detail": "Si el correo está registrado, recibirás instrucciones para restablecer tu contraseña."}
+    if user:
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+        code = f"{uid}:{token}"
+        send_mail(
+            "Recuperación de acceso FIIS",
+            f"Utiliza este código en el portal FIIS para restablecer tu contraseña:\n\n{code}",
+            None,
+            [user.email],
+        )
+        audit(user, "cuenta.recuperacion_solicitada", user.username)
+        from django.conf import settings
+
+        if settings.DEBUG:
+            response["reset_code"] = code
+    return JsonResponse(response)
+
+
+@csrf_protect
+def password_reset_confirm(request):
+    if request.method != "POST":
+        return JsonResponse({"detail": "Método no permitido"}, status=405)
+    body = json.loads(request.body or "{}")
+    try:
+        uid, token = str(body.get("code", "")).split(":", 1)
+        user = User.objects.get(pk=force_str(urlsafe_base64_decode(uid)))
+    except (ValueError, TypeError, User.DoesNotExist):
+        user = None
+    if not user or not default_token_generator.check_token(user, token):
+        return JsonResponse({"detail": "El código es inválido o ya venció."}, status=400)
+    password = body.get("password", "")
+    try:
+        validate_new_password(password, user)
+    except ValidationError as exc:
+        return JsonResponse({"detail": exc.detail}, status=400)
+    user.set_password(password)
+    user.save(update_fields=["password"])
+    security, _ = AccountSecurity.objects.get_or_create(user=user)
+    security.must_change_password = False
+    security.password_changed_at = timezone.now()
+    security.save()
+    audit(user, "cuenta.contrasena_restablecida", user.username)
+    return JsonResponse({"ok": True})
 
 
 @csrf_protect
@@ -383,11 +507,26 @@ class AdminData(APIView):
             .annotate(occupied=Count("enrollment_lines"))
             .order_by("-period__code", "cycle", "raw_name", "section_code")
         ]
-        students = list(
-            Student.objects.select_related("plan").values("id", "student_code", "full_name", "plan__name", "active")
-        )
+        students = [
+            {
+                "id": s.id,
+                "student_code": s.student_code,
+                "full_name": s.full_name,
+                "plan__name": s.plan.name,
+                "active": s.active and s.user.is_active,
+                "email": s.user.email,
+                "activation_pending": getattr(getattr(s.user, "security", None), "activation_pending", False),
+            }
+            for s in Student.objects.select_related("plan", "user", "user__security")
+        ]
         teachers = [
-            {"id": t.id, "name": t.name, "active": t.active, "username": t.user.username if t.user_id else None}
+            {
+                "id": t.id,
+                "name": t.name,
+                "active": t.active and (t.user.is_active if t.user_id else True),
+                "username": t.user.username if t.user_id else None,
+                "email": t.user.email if t.user_id else None,
+            }
             for t in Teacher.objects.select_related("user").order_by("name")
         ]
         return Response(
@@ -537,6 +676,18 @@ class AdminCourse(APIView):
             prerequisites = list(Course.objects.filter(id__in=ids, plan=obj.plan))
             if len(prerequisites) != len(ids) or any(p.semester >= obj.semester for p in prerequisites):
                 raise ValidationError("Los prerrequisitos deben pertenecer al plan y a ciclos anteriores.")
+        if "academic_data_verified" in request.data:
+            verified = request.data["academic_data_verified"]
+            if not isinstance(verified, bool):
+                raise ValidationError("La verificación debe ser booleana.")
+            effective = {
+                "credits": request.data.get("credits", obj.credits),
+                "theory_hours": request.data.get("theory_hours", obj.theory_hours),
+                "practice_hours": request.data.get("practice_hours", obj.practice_hours),
+            }
+            if verified and any(value is None for value in effective.values()):
+                raise ValidationError("Completa créditos, horas teóricas y prácticas antes de verificar el curso.")
+            obj.academic_data_verified = verified
         obj.save()
         if "prerequisite_ids" in request.data:
             obj.prerequisites.set(prerequisites)
@@ -606,9 +757,12 @@ class AdminSection(APIView):
             if not isinstance(request.data["published"], bool):
                 raise ValidationError("Publicado debe ser booleano.")
             if request.data["published"] and (
-                not section.course_id or not section.course.credits or not section.meetings.exists()
+                not section.course_id
+                or not section.course.credits
+                or not section.course.academic_data_verified
+                or not section.meetings.exists()
             ):
-                raise ValidationError("Primero vincula el curso, configura créditos y horario.")
+                raise ValidationError("Primero vincula el curso, verifica sus datos académicos y configura el horario.")
             section.published = request.data["published"]
         if "meetings" in request.data:
             if section.enrollment_lines.exists():
@@ -673,7 +827,7 @@ class AdminTeacher(APIView):
             raise ValidationError("Indica el nombre completo del docente.")
         email = str(request.data.get("email") or request.data.get("username") or "").strip().lower()
         password = request.data.get("password", "")
-        if "@" not in email:
+        if not email.endswith("@unfv.edu.pe"):
             raise ValidationError("Indica un correo institucional válido.")
         existing_user = User.objects.filter(email__iexact=email).first()
         if not existing_user and len(password) < 12:
@@ -687,8 +841,39 @@ class AdminTeacher(APIView):
                 raise ValidationError("El correo ya está vinculado a otro docente.")
             teacher.user = user
             teacher.save(update_fields=["user"])
+            if not existing_user:
+                AccountSecurity.objects.update_or_create(user=user, defaults={"must_change_password": True})
         audit(request.user, "docente.creado" if created else "docente.acceso_creado", teacher)
         return Response({"id": teacher.pk, "email": email}, status=201)
+
+    def patch(self, request, pk):
+        need_admin(request.user)
+        teacher = Teacher.objects.select_related("user").filter(pk=pk).first()
+        if not teacher:
+            raise NotFound()
+        if "name" in request.data:
+            name = " ".join(str(request.data["name"]).split()).upper()
+            if len(name) < 5 or Teacher.objects.exclude(pk=pk).filter(name=name).exists():
+                raise ValidationError("Nombre docente inválido o repetido.")
+            teacher.name = name
+        if "active" in request.data:
+            if not isinstance(request.data["active"], bool):
+                raise ValidationError("Activo debe ser booleano.")
+            teacher.active = request.data["active"]
+            if teacher.user_id:
+                teacher.user.is_active = teacher.active
+                teacher.user.save(update_fields=["is_active"])
+        if "temporary_password" in request.data:
+            if not teacher.user_id:
+                raise ValidationError("El docente todavía no tiene una cuenta.")
+            password = request.data["temporary_password"]
+            validate_new_password(password, teacher.user)
+            teacher.user.set_password(password)
+            teacher.user.save(update_fields=["password"])
+            AccountSecurity.objects.update_or_create(user=teacher.user, defaults={"must_change_password": True})
+        teacher.save()
+        audit(request.user, "docente.cuenta_actualizada", teacher, {"fields": list(request.data.keys())})
+        return Response({"ok": True})
 
 
 class AdminStudent(APIView):
@@ -701,8 +886,10 @@ class AdminStudent(APIView):
         name = str(request.data.get("full_name", "")).strip()
         email = str(request.data.get("email", "")).strip().lower()
         password = request.data.get("password", "")
-        if not code or not name or "@" not in email or len(password) < 12:
-            raise ValidationError("Se requieren código, nombre, correo y contraseña de al menos 12 caracteres.")
+        if not code or not name or not email.endswith("@unfv.edu.pe"):
+            raise ValidationError("Se requieren código, nombre y correo institucional.")
+        if password:
+            validate_new_password(password)
         if (
             User.objects.filter(username=code).exists()
             or User.objects.filter(email__iexact=email).exists()
@@ -710,10 +897,56 @@ class AdminStudent(APIView):
         ):
             raise ValidationError("El código o correo ya está registrado.")
         with transaction.atomic():
-            user = User.objects.create_user(username=code, email=email, password=password)
-            student = Student.objects.create(user=user, student_code=code, full_name=name, plan=plan)
+            user = User.objects.create_user(username=code, email=email, password=password or None)
+            pending = not bool(password)
+            user.is_active = not pending
+            user.save(update_fields=["is_active"])
+            student = Student.objects.create(user=user, student_code=code, full_name=name, plan=plan, active=not pending)
+            AccountSecurity.objects.create(
+                user=user, must_change_password=bool(password), activation_pending=pending
+            )
         audit(request.user, "alumno.creado", student)
         return Response({"id": student.pk}, status=201)
+
+    def patch(self, request, pk):
+        need_admin(request.user)
+        student = Student.objects.select_related("user", "plan").filter(pk=pk).first()
+        if not student:
+            raise NotFound()
+        if "full_name" in request.data:
+            name = " ".join(str(request.data["full_name"]).split())
+            if len(name) < 5:
+                raise ValidationError("Nombre inválido.")
+            student.full_name = name
+        if "email" in request.data:
+            email = str(request.data["email"]).strip().lower()
+            if not email.endswith("@unfv.edu.pe") or User.objects.exclude(pk=student.user_id).filter(email__iexact=email).exists():
+                raise ValidationError("Correo institucional inválido o repetido.")
+            student.user.email = email
+        if "active" in request.data:
+            if not isinstance(request.data["active"], bool):
+                raise ValidationError("Activo debe ser booleano.")
+            student.active = request.data["active"]
+            student.user.is_active = request.data["active"]
+        if "temporary_password" in request.data:
+            password = request.data["temporary_password"]
+            validate_new_password(password, student.user)
+            student.user.set_password(password)
+            AccountSecurity.objects.update_or_create(user=student.user, defaults={"must_change_password": True, "activation_pending": False})
+            student.active = True
+            student.user.is_active = True
+        if request.data.get("enable_activation") is True:
+            student.user.set_unusable_password()
+            student.user.is_active = False
+            student.active = False
+            AccountSecurity.objects.update_or_create(
+                user=student.user,
+                defaults={"must_change_password": False, "activation_pending": True},
+            )
+        student.user.save()
+        student.save()
+        audit(request.user, "alumno.cuenta_actualizada", student, {"fields": list(request.data.keys())})
+        return Response({"ok": True})
 
 
 class AdminGrade(APIView):

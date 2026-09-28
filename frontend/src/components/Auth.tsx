@@ -8,8 +8,13 @@ function explain(error: unknown) {
 }
 
 export function Login({ onLogin }: { onLogin: (identity: Identity) => void }) {
+  const [mode, setMode] = useState<"login" | "forgot" | "reset" | "activate">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
+  const [studentCode, setStudentCode] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -20,6 +25,33 @@ export function Login({ onLogin }: { onLogin: (identity: Identity) => void }) {
     try {
       await csrf();
       onLogin(await api<Identity>("/auth/login/", "POST", { email, password }));
+    } catch (requestError) {
+      setError(explain(requestError));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function auxiliarySubmit(event: React.FormEvent) {
+    event.preventDefault();
+    setError("");
+    setMessage("");
+    setBusy(true);
+    try {
+      if (mode === "forgot") {
+        const result = await api<{ detail: string; reset_code?: string }>("/auth/password-reset/", "POST", { email });
+        setMessage(result.detail);
+        if (result.reset_code) setCode(result.reset_code);
+        setMode("reset");
+      } else if (mode === "reset") {
+        await api("/auth/password-reset/confirm/", "POST", { code, password });
+        setMessage("Contraseña restablecida. Ya puedes iniciar sesión.");
+        setMode("login");
+      } else {
+        await api("/auth/activate/", "POST", { student_code: studentCode, email, full_name: fullName, password });
+        setMessage("Cuenta activada. Ya puedes iniciar sesión.");
+        setMode("login");
+      }
     } catch (requestError) {
       setError(explain(requestError));
     } finally {
@@ -61,44 +93,54 @@ export function Login({ onLogin }: { onLogin: (identity: Identity) => void }) {
       <div className="login-form-zone">
         <div className="login-card">
           <span className="eyebrow">BIENVENIDO DE NUEVO</span>
-          <h2>Ingresar al portal</h2>
+          <h2>{mode === "login" ? "Ingresar al portal" : mode === "forgot" ? "Recuperar acceso" : mode === "reset" ? "Nueva contraseña" : "Activar cuenta de alumno"}</h2>
           <p>
-            Usa tu correo institucional. El sistema identificará automáticamente
-            tus permisos.
+            {mode === "login" ? "Usa tu correo institucional o código universitario." : "Completa los datos solicitados para proteger tu cuenta."}
           </p>
-          <form onSubmit={submit}>
+          <form onSubmit={mode === "login" ? submit : auxiliarySubmit}>
+            {mode === "activate" && <><label>Código universitario<input required value={studentCode} onChange={(e) => setStudentCode(e.target.value)} /></label><label>Nombres y apellidos<input required minLength={5} value={fullName} onChange={(e) => setFullName(e.target.value)} /></label></>}
+            {mode !== "reset" && (
             <label>
-              Correo institucional o usuario
+              {mode === "login" ? "Correo institucional o código" : "Correo institucional"}
               <input
-                type="text"
+                type={mode === "login" ? "text" : "email"}
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 required
-                placeholder="codigo@unfv.edu.pe o demo"
+                placeholder="codigo@unfv.edu.pe"
                 autoComplete="username"
               />
             </label>
+            )}
+            {mode === "reset" && <label>Código de recuperación<input required value={code} onChange={(e) => setCode(e.target.value)} /></label>}
+            {mode !== "forgot" && (
             <label>
-              Contraseña
+              {mode === "login" ? "Contraseña" : "Nueva contraseña"}
               <input
                 type="password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 required
+                minLength={mode === "login" ? undefined : 12}
                 placeholder="Ingresa tu contraseña"
                 autoComplete="current-password"
               />
             </label>
+            )}
             {error && (
               <div className="alert error">
                 <AlertCircle size={16} />
                 {error}
               </div>
             )}
+            {message && <div className="alert good">{message}</div>}
             <button className="btn primary wide" disabled={busy}>
-              {busy ? "Ingresando..." : "Ingresar al portal"} <span>→</span>
+              {busy ? "Procesando..." : mode === "login" ? "Ingresar al portal" : mode === "forgot" ? "Enviar instrucciones" : mode === "reset" ? "Guardar contraseña" : "Activar cuenta"} <span>→</span>
             </button>
           </form>
+          <div className="login-actions">
+            {mode === "login" ? <><button type="button" onClick={() => setMode("forgot")}>Olvidé mi contraseña</button><button type="button" onClick={() => setMode("activate")}>Activar cuenta de alumno</button></> : <button type="button" onClick={() => setMode("login")}>Volver al inicio de sesión</button>}
+          </div>
           <p className="login-note">
             Tus opciones de acceso dependen de los perfiles asociados a tu
             correo.

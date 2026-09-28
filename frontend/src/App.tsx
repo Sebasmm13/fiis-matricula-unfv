@@ -109,6 +109,8 @@ export default function App() {
         }}
       />
     );
+  if (me.must_change_password)
+    return <PasswordChange onChanged={setMe} onLogout={() => void out()} />;
   if (!me.role)
     return (
       <RoleSelector
@@ -297,6 +299,40 @@ export default function App() {
           )}
         </div>
       </main>
+    </div>
+  );
+}
+
+function PasswordChange({ onChanged, onLogout }: { onChanged: (me: Identity) => void; onLogout: () => void }) {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  return (
+    <div className="login-screen account-security-screen">
+      <div className="login-form-zone">
+        <div className="login-card">
+          <span className="eyebrow">SEGURIDAD DE LA CUENTA</span>
+          <h2>Crea una contraseña personal</h2>
+          <p>La contraseña inicial es temporal. Debes reemplazarla antes de continuar.</p>
+          <form onSubmit={async (e) => {
+            e.preventDefault();
+            if (newPassword !== confirm) { setError("Las contraseñas nuevas no coinciden."); return; }
+            setBusy(true); setError("");
+            try { onChanged(await api<Identity>("/auth/change-password/", "POST", { current_password: currentPassword, new_password: newPassword })); }
+            catch (requestError) { setError(explain(requestError)); }
+            finally { setBusy(false); }
+          }}>
+            <label>Contraseña inicial<input type="password" required value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} /></label>
+            <label>Nueva contraseña<input type="password" required minLength={12} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} /></label>
+            <label>Confirmar contraseña<input type="password" required minLength={12} value={confirm} onChange={(e) => setConfirm(e.target.value)} /></label>
+            {error && <div className="alert error">{error}</div>}
+            <button className="btn primary wide" disabled={busy}>{busy ? "Guardando..." : "Cambiar contraseña"}</button>
+          </form>
+          <button className="text-button" onClick={onLogout}>Cerrar sesión</button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -1422,7 +1458,23 @@ function AdminPage({
                           {s.section} / {s.classroom}
                         </td>
                         <td>
-                          {s.teacher}
+                          <select
+                            aria-label={`Docente de ${s.course_name}`}
+                            value={s.teacher_id || ""}
+                            onChange={(e) =>
+                              void submit(
+                                `/admin/sections/${s.id}/`,
+                                "PATCH",
+                                { teacher_id: Number(e.target.value) },
+                                "Docente asignado; el horario fue validado",
+                              )
+                            }
+                          >
+                            <option value="" disabled>Asignar docente...</option>
+                            {data.teachers.filter((t) => t.active).map((t) => (
+                              <option key={t.id} value={t.id}>{t.name}</option>
+                            ))}
+                          </select>
                           <small>
                             {s.meetings
                               .map((m) => `${m.day_name} ${m.start}-${m.end}`)
@@ -1627,6 +1679,7 @@ function AdminPage({
                     <th>Nombre</th>
                     <th>Plan</th>
                     <th>Estado</th>
+                    <th>Administrar cuenta</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1639,6 +1692,16 @@ function AdminPage({
                         <Badge kind={s.active ? "good" : "warn"}>
                           {s.active ? "Activo" : "Inactivo"}
                         </Badge>
+                      </td>
+                      <td>
+                        <small>{s.email}</small>
+                        {s.activation_pending && <Badge kind="warn">Pendiente de activación</Badge>}
+                        <div className="account-actions">
+                          <button onClick={() => { const name = window.prompt("Nombre completo", s.full_name); if (name) void submit(`/admin/students/${s.id}/`, "PATCH", { full_name: name }, "Nombre actualizado"); }}>Editar</button>
+                          <button onClick={() => void submit(`/admin/students/${s.id}/`, "PATCH", { active: !s.active }, s.active ? "Cuenta suspendida" : "Cuenta reactivada")}>{s.active ? "Suspender" : "Reactivar"}</button>
+                          <button onClick={() => { const password = window.prompt("Contraseña temporal (mínimo 12 caracteres)"); if (password) void submit(`/admin/students/${s.id}/`, "PATCH", { temporary_password: password }, "Contraseña temporal creada"); }}>Restablecer clave</button>
+                          <button disabled={s.activation_pending} onClick={() => { if (window.confirm(`¿Habilitar la activación para ${s.full_name}? Su contraseña actual dejará de funcionar.`)) void submit(`/admin/students/${s.id}/`, "PATCH", { enable_activation: true }, "Activación habilitada; el alumno ya puede crear su cuenta"); }}>{s.activation_pending ? "Activación pendiente" : "Habilitar activación"}</button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -1732,6 +1795,9 @@ function CourseEditor({
           {course.plan_name} · Ciclo {course.semester} · Requisitos:{" "}
           {course.prerequisites.map((p) => p.code).join(", ") || "ninguno"}
         </small>
+        <Badge kind={course.academic_data_verified ? "good" : "warn"}>
+          {course.academic_data_verified ? "Datos verificados" : "Pendiente de validación académica"}
+        </Badge>
       </div>
       <div className="editor-fields">
         <label>
@@ -1786,6 +1852,7 @@ function CourseEditor({
               theory_hours: theory ? Number(theory) : null,
               practice_hours: practice ? Number(practice) : null,
               prerequisite_ids: found.map((x) => x!.id),
+              academic_data_verified: Boolean(credits && theory !== "" && practice !== ""),
             });
           }}
         >
@@ -2082,7 +2149,7 @@ function NewStudent({
             password,
             plan_id: plan,
           },
-          "Alumno registrado",
+          password ? "Alumno registrado con cambio de clave obligatorio" : "Alumno creado; ya puede activar su cuenta",
         );
         setCode("");
         setName("");
@@ -2116,15 +2183,15 @@ function NewStudent({
         />
       </label>
       <label>
-        Contraseña inicial
+        Contraseña inicial (opcional)
         <input
           type="password"
           minLength={12}
-          required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
       </label>
+      <small>Si queda vacía, el alumno activará su cuenta con código, correo y nombre completo.</small>
       <label>
         Plan
         <select value={plan} onChange={(e) => setPlan(Number(e.target.value))}>
@@ -2231,6 +2298,7 @@ function NewTeacher({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   return (
+    <>
     <form
       className="teacher-account-form"
       onSubmit={(e) => {
@@ -2293,6 +2361,23 @@ function NewTeacher({
         <button className="btn outline">Vincular acceso</button>
       </div>
     </form>
+    <div className="table-wrap inner">
+      <table>
+        <thead><tr><th>Docente</th><th>Correo</th><th>Estado</th><th>Administrar</th></tr></thead>
+        <tbody>{teachers.filter((t) => t.username).map((t) => (
+          <tr key={t.id}>
+            <td><strong>{t.name}</strong></td><td>{t.email}</td>
+            <td><Badge kind={t.active ? "good" : "warn"}>{t.active ? "Activo" : "Suspendido"}</Badge></td>
+            <td><div className="account-actions">
+              <button type="button" onClick={() => { const name = window.prompt("Nombre completo", t.name); if (name) void submit(`/admin/teachers/${t.id}/`, "PATCH", { name }, "Docente actualizado"); }}>Editar</button>
+              <button type="button" onClick={() => void submit(`/admin/teachers/${t.id}/`, "PATCH", { active: !t.active }, t.active ? "Cuenta suspendida" : "Cuenta reactivada")}>{t.active ? "Suspender" : "Reactivar"}</button>
+              <button type="button" onClick={() => { const password = window.prompt("Contraseña temporal (mínimo 12 caracteres)"); if (password) void submit(`/admin/teachers/${t.id}/`, "PATCH", { temporary_password: password }, "Contraseña temporal creada"); }}>Restablecer clave</button>
+            </div></td>
+          </tr>
+        ))}</tbody>
+      </table>
+    </div>
+    </>
   );
 }
 

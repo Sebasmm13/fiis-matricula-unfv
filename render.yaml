@@ -5,7 +5,7 @@ services:
     plan: free
     region: oregon
     rootDir: backend
-    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate && python manage.py seed_fiis --demo-users
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate && python manage.py seed_fiis
     startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120
     healthCheckPath: /api/auth/csrf/
     envVars:
@@ -21,6 +21,16 @@ services:
         value: "1"
       - key: DJANGO_HSTS_SECONDS
         value: "31536000"
+      - key: DJANGO_EMAIL_BACKEND
+        value: django.core.mail.backends.smtp.EmailBackend
+      - key: DJANGO_DEFAULT_FROM_EMAIL
+        value: no-responder@unfv.edu.pe
+      - key: DJANGO_EMAIL_HOST
+        sync: false
+      - key: DJANGO_EMAIL_HOST_USER
+        sync: false
+      - key: DJANGO_EMAIL_HOST_PASSWORD
+        sync: false
       - key: DJANGO_CSRF_TRUSTED_ORIGINS
         value: https://*.vercel.app
       - key: PYTHON_VERSION

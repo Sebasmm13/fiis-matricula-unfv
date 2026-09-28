@@ -43,6 +43,10 @@ Para Linux/macOS: sustituye `py` por `python3`, la activación por `source .venv
 
 ### Cuentas locales de demostración
 
+Las contraseñas iniciales de las cuentas docentes son temporales: el portal exige
+cambiarlas antes de permitir el acceso al resto de funciones. En un despliegue
+real no se ejecuta `--demo-users`.
+
 Se crean **únicamente** al pasar `--demo-users`:
 
 | Perfil | Usuario o correo | Contraseña |
@@ -187,10 +191,28 @@ GitHub Actions repite estas verificaciones con PostgreSQL y Node.js en cada `pus
 La configuración incluida utiliza Vercel para `frontend/`, Render para Django y una base PostgreSQL externa persistente, como Supabase.
 
 1. Crea el proyecto PostgreSQL y copia la URI del **Session pooler**.
-2. En Render, crea un Blueprint desde este repositorio. `render.yaml` instala dependencias, ejecuta `collectstatic`, aplica migraciones y carga los datos de demostración.
+2. En Render, crea un Blueprint desde este repositorio. `render.yaml` instala dependencias, ejecuta `collectstatic`, aplica migraciones y carga únicamente los datos académicos, sin cuentas de demostración.
 3. Define `DATABASE_URL` con la URI anterior. Render genera `DJANGO_SECRET_KEY` automáticamente.
 4. En Vercel, importa el mismo repositorio y selecciona `frontend` como directorio raíz.
 5. Si Render asigna un nombre distinto a `fiis-matricula-api.onrender.com`, actualiza los destinos de `frontend/vercel.json`.
+
+### Lista de verificación para producción
+
+- Usa PostgreSQL mediante `DATABASE_URL`; SQLite queda reservado para desarrollo y pruebas.
+- Configura una `DJANGO_SECRET_KEY` larga y única, `DJANGO_DEBUG=0`, cookies seguras, redirección HTTPS y HSTS.
+- Configura las variables SMTP indicadas en `.env.example` para la recuperación de contraseñas.
+- Crea la primera cuenta administrativa con `python manage.py createsuperuser`; no habilites usuarios demo.
+- Completa créditos y horas teóricas/prácticas y marca cada curso como verificado antes de publicar sus secciones.
+- Revisa la auditoría después de altas, suspensiones, restablecimientos y cambios de asignación.
+
+### Gestión profesional de cuentas
+
+Administración puede editar, suspender, reactivar y restablecer las cuentas de
+alumnos y docentes. Una contraseña restablecida es temporal y obliga a cambiarla
+en el siguiente acceso. Los alumnos creados sin contraseña activan su cuenta con
+código universitario, correo institucional y nombre completo. El nombre se
+guarda en el perfil, pero nunca se usa como credencial porque puede repetirse.
+La recuperación por correo utiliza códigos de un solo uso con vencimiento.
 
 Las solicitudes `/api/` pasan por una reescritura de Vercel hacia Render, de modo que las sesiones y el token CSRF siguen siendo del mismo origen para el navegador. El servicio gratuito de Render puede tardar cerca de un minuto en responder después de estar inactivo.
 

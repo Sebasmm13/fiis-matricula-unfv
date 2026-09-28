@@ -7,6 +7,7 @@ export interface Identity {
   roles: Role[];
   has_photo: boolean;
   photo_version: string | null;
+  must_change_password: boolean;
   student_code?: string;
   plan?: string;
   period?: { id: number; code: string; status: string; max_credits: number };
@@ -25,6 +26,7 @@ export interface Section {
   official_code: string | null;
   section: string;
   teacher: string;
+  teacher_id: number | null;
   classroom: string;
   cycle: string;
   capacity: number;
@@ -49,6 +51,7 @@ export interface Course {
   theory_hours: number | null;
   practice_hours: number | null;
   elective_track: string;
+  academic_data_verified: boolean;
   prerequisites: { id: number; code: string; name: string }[];
   passed: boolean;
 }
@@ -88,6 +91,7 @@ export interface AdminData {
     name: string;
     active: boolean;
     username: string | null;
+    email: string | null;
   }[];
   students: {
     id: number;
@@ -95,6 +99,8 @@ export interface AdminData {
     full_name: string;
     plan__name: string;
     active: boolean;
+    email: string;
+    activation_pending: boolean;
   }[];
 }
 export interface Demand {

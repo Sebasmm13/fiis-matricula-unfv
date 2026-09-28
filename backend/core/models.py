@@ -21,6 +21,7 @@ class Course(models.Model):
     theory_hours = models.PositiveSmallIntegerField(null=True, blank=True, help_text="Horas académicas semanales")
     practice_hours = models.PositiveSmallIntegerField(null=True, blank=True, help_text="Horas académicas semanales")
     elective_track = models.CharField(max_length=120, blank=True)
+    academic_data_verified = models.BooleanField(default=False)
     prerequisites = models.ManyToManyField("self", symmetrical=False, blank=True)
 
     class Meta:
@@ -45,6 +46,13 @@ class ProfilePhoto(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile_photo")
     image = models.BinaryField()
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class AccountSecurity(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="security")
+    must_change_password = models.BooleanField(default=False)
+    activation_pending = models.BooleanField(default=False)
+    password_changed_at = models.DateTimeField(null=True, blank=True)
 
 
 class Student(models.Model):

@@ -230,6 +230,12 @@ p {
   color: #b8a69a !important;
   margin-top: 26px;
 }
+.login-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 14px; }
+.login-actions button, .text-button { border: 0; background: none; color: #b84b12; cursor: pointer; font-weight: 700; }
+.account-security-screen { grid-template-columns: 1fr; }
+.account-security-screen .login-form-zone { min-height: 100vh; }
+.account-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.account-actions button { border: 1px solid #d8d4cf; border-radius: 7px; background: #fff; padding: 5px 8px; cursor: pointer; }
 .btn {
   border: 0;
   border-radius: 9px;

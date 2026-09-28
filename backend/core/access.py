@@ -32,6 +32,7 @@ def identity(user, role=None):
         "name": name,
         "has_photo": bool(photo),
         "photo_version": photo.updated_at.isoformat() if photo else None,
+        "must_change_password": getattr(getattr(user, "security", None), "must_change_password", False),
     }
 
 

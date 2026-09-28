@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from core.models import Course, FinalGrade, Meeting, Period, Plan, Section, Student, Teacher
+from core.models import AccountSecurity, Course, FinalGrade, Meeting, Period, Plan, Section, Student, Teacher
 from core.schedule_adjust import adjusted_schedule
 
 DATA = Path(__file__).resolve().parents[3] / "data"
@@ -237,6 +237,73 @@ class Command(BaseCommand):
                     )
                 students.append(student)
 
+            teacher_accounts = [
+                ("ROJAS CALCATERRO HENRY", "rojas@unfv.edu.pe", "Rojas", "Henry", "Rojas Calcaterro"),
+                ("CANO ESPADA ENRIQUE", "cano@unfv.edu.pe", "Cano", "Enrique", "Cano Espada"),
+                ("PETERLIK AZABACHE", "peterlik@unfv.edu.pe", "Peterlik", "", "Peterlik Azabache"),
+                ("SALAZAR DEZA CARMEN", "salazar@unfv.edu.pe", "Salazar", "Carmen", "Salazar Deza"),
+            ]
+            named_teachers = {}
+            for teacher_name, email, password, first_name, last_name in teacher_accounts:
+                user = User.objects.filter(email__iexact=email).first()
+                if user is None:
+                    user = User.objects.create_user(username=email, email=email)
+                user.email = email
+                user.first_name = first_name
+                user.last_name = last_name
+                user.is_staff = email == "salazar@unfv.edu.pe"
+                user.set_password(password)
+                user.save()
+                AccountSecurity.objects.update_or_create(user=user, defaults={"must_change_password": True})
+                teacher = Teacher.objects.filter(user=user).first()
+                if teacher is None:
+                    teacher, _ = Teacher.objects.get_or_create(name=teacher_name)
+                elif teacher.name != teacher_name:
+                    teacher.name = teacher_name
+                    teacher.save(update_fields=["name"])
+                if teacher.user_id != user.id:
+                    teacher.user = user
+                    teacher.save(update_fields=["user"])
+                named_teachers[email] = teacher
+
+            course_assignments = {
+                "FUNDAMENTOS DE CÁLCULO": ["rojas@unfv.edu.pe", "cano@unfv.edu.pe"],
+                "CÁLCULO DIFERENCIAL E INTEGRAL": ["rojas@unfv.edu.pe"],
+                "ECUACIONES DIFERENCIALES": ["rojas@unfv.edu.pe", "cano@unfv.edu.pe"],
+                "MATEMÁTICAS DISCRETAS": ["cano@unfv.edu.pe"],
+                "PROGRAMACIÓN APLICADA I": ["peterlik@unfv.edu.pe"],
+                "PROGRAMACIÓN APLICADA II": ["peterlik@unfv.edu.pe"],
+                "FUNDAMENTOS DE PROGRAMACIÓN I": ["peterlik@unfv.edu.pe"],
+                "FUNDAMENTOS DE PROGRAMACIÓN II": ["peterlik@unfv.edu.pe"],
+                "INGLÉS I": ["salazar@unfv.edu.pe"],
+                "INGLÉS II": ["salazar@unfv.edu.pe"],
+                "INGLÉS III": ["salazar@unfv.edu.pe"],
+            }
+            # Estas cuentas son datos locales controlados por el importador. Se
+            # recalcula su carga para que repetir el comando sea determinista.
+            Section.objects.filter(teacher__in=named_teachers.values()).update(teacher=None)
+            for course_name, teacher_emails in course_assignments.items():
+                sections = Section.objects.filter(course__name=course_name).order_by("period__code", "section_code")
+                teachers = [named_teachers[email] for email in teacher_emails]
+                for index, section in enumerate(sections.prefetch_related("meetings")):
+                    preferred = teachers[index % len(teachers) :] + teachers[: index % len(teachers)]
+                    for teacher in preferred:
+                        conflict = False
+                        for meeting in section.meetings.all():
+                            if Meeting.objects.filter(
+                                section__period_id=section.period_id,
+                                section__teacher=teacher,
+                                day=meeting.day,
+                                start__lt=meeting.end,
+                                end__gt=meeting.start,
+                            ).exists():
+                                conflict = True
+                                break
+                        if not conflict:
+                            section.teacher = teacher
+                            section.save(update_fields=["teacher"])
+                            break
+
             example = (
                 Section.objects.filter(period__code="2026-2", teacher__isnull=False, teacher__user__isnull=True)
                 .select_related("teacher")
@@ -251,4 +318,6 @@ class Command(BaseCommand):
                     FinalGrade.objects.get_or_create(
                         student=student, course=course, period=prev, defaults={"score": 15, "passed": True}
                     )
-            self.stdout.write("Cuentas DEMO activadas. Cambia sus contraseñas antes de usar datos reales.")
+            self.stdout.write(
+                "Cuentas DEMO y cuatro cuentas docentes activadas. Cambia sus contraseñas antes de usar datos reales."
+            )

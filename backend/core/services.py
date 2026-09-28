@@ -39,6 +39,7 @@ def section_info(section):
         "official_code": section.official_code or None,
         "section": section.section_code,
         "teacher": section.teacher.name if section.teacher else "Por asignar",
+        "teacher_id": section.teacher_id,
         "classroom": section.classroom or "Por asignar",
         "cycle": section.cycle,
         "capacity": section.capacity,
@@ -65,6 +66,7 @@ def course_info(course, passed=None):
         "theory_hours": course.theory_hours,
         "practice_hours": course.practice_hours,
         "elective_track": course.elective_track,
+        "academic_data_verified": course.academic_data_verified,
         "prerequisites": [{"id": p.id, "code": p.curricular_code, "name": p.name} for p in course.prerequisites.all()],
         "passed": bool(passed is not None and course.id in passed),
     }
