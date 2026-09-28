@@ -249,6 +249,7 @@ class EndToEndApiTests(TestCase):
             data='{"email":"2024023935@unfv.edu.pe","password":"2024023935"}',
             content_type="application/json",
             HTTP_X_CSRFTOKEN=token,
+            HTTP_ORIGIN="http://localhost:5173",
         )
         self.assertEqual(response.status_code, 200)
         token = client.get("/api/auth/csrf/").json()["csrfToken"]
