@@ -7,6 +7,10 @@
 SET client_encoding = 'UTF8';
 BEGIN;
 
+-- Compatibilidad con migraciones posteriores: el respaldo fue generado antes
+-- de incorporar la validación explícita de datos académicos.
+ALTER TABLE "core_course" ALTER COLUMN "academic_data_verified" SET DEFAULT FALSE;
+
 TRUNCATE TABLE "auth_group", "auth_user", "core_period", "core_plan", "django_content_type", "django_session", "auth_permission", "auth_user_groups", "core_auditlog", "core_course", "core_profilephoto", "core_student", "core_teacher", "django_admin_log", "auth_group_permissions", "auth_user_user_permissions", "core_course_prerequisites", "core_enrollment", "core_finalgrade", "core_section", "core_enrollmentline", "core_meeting", "core_preselection" RESTART IDENTITY CASCADE;
 
 -- auth_user: 6 filas

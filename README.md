@@ -27,6 +27,10 @@ py manage.py seed_fiis --demo-users
 py manage.py runserver 127.0.0.1:8000
 ```
 
+Si el puerto `5432` ya está ocupado por otra instalación de PostgreSQL, usa
+`$env:FIIS_DB_PORT="5433"` antes de `docker compose up -d db` y cambia el puerto
+de `DATABASE_URL` a `5433`.
+
 Si PowerShell bloquea el script de activación, ejecuta `.venv\Scripts\python.exe` en lugar de `py` en los comandos siguientes.
 
 En una **segunda consola**:
