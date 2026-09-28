@@ -1,10 +1,14 @@
 import os
 from pathlib import Path
 
+import dj_database_url
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "development-only-change-before-production")
 DEBUG = os.environ.get("DJANGO_DEBUG", "0") == "1"
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+if render_hostname := os.environ.get("RENDER_EXTERNAL_HOSTNAME"):
+    ALLOWED_HOSTS.append(render_hostname)
 CSRF_TRUSTED_ORIGINS = [
     value
     for value in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "http://127.0.0.1:5173,http://localhost:5173").split(",")
@@ -22,6 +26,7 @@ INSTALLED_APPS = [
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -46,21 +51,9 @@ TEMPLATES = [
     }
 ]
 WSGI_APPLICATION = "config.wsgi.application"
-if not os.environ.get("DJANGO_USE_SQLITE"):
-    os.environ.setdefault("DATABASE_URL", "postgresql://fiis:fiis_local@127.0.0.1:5432/fiis_matricula")
 if os.environ.get("DATABASE_URL") and not os.environ.get("DJANGO_USE_SQLITE"):
-    from urllib.parse import urlparse
-
-    d = urlparse(os.environ["DATABASE_URL"])
     DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": d.path.lstrip("/"),
-            "USER": d.username,
-            "PASSWORD": d.password,
-            "HOST": d.hostname,
-            "PORT": d.port or 5432,
-        }
+        "default": dj_database_url.config(conn_max_age=60, conn_health_checks=True),
     }
 else:
     # SQLite solamente para ejecutar pruebas sin servidor PostgreSQL.
@@ -80,7 +73,12 @@ LANGUAGE_CODE = "es-pe"
 TIME_ZONE = "America/Lima"
 USE_I18N = True
 USE_TZ = True
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+}
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
@@ -92,6 +90,7 @@ SECURE_HSTS_SECONDS = int(os.environ.get("DJANGO_HSTS_SECONDS", "0"))
 SECURE_HSTS_INCLUDE_SUBDOMAINS = SECURE_HSTS_SECONDS > 0
 SECURE_HSTS_PRELOAD = SECURE_HSTS_SECONDS > 0
 SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 X_FRAME_OPTIONS = "DENY"
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework.authentication.SessionAuthentication"],

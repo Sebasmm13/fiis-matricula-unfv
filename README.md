@@ -182,3 +182,15 @@ npm run build
 
 GitHub Actions repite estas verificaciones con PostgreSQL y Node.js en cada `push` y `pull_request`. El código se distribuye bajo la licencia MIT incluida en `LICENSE`; las pautas para colaborar están en `CONTRIBUTING.md`.
 
+## Despliegue gratuito
+
+La configuración incluida utiliza Vercel para `frontend/`, Render para Django y una base PostgreSQL externa persistente, como Supabase.
+
+1. Crea el proyecto PostgreSQL y copia la URI del **Session pooler**.
+2. En Render, crea un Blueprint desde este repositorio. `render.yaml` instala dependencias, ejecuta `collectstatic`, aplica migraciones y carga los datos de demostración.
+3. Define `DATABASE_URL` con la URI anterior. Render genera `DJANGO_SECRET_KEY` automáticamente.
+4. En Vercel, importa el mismo repositorio y selecciona `frontend` como directorio raíz.
+5. Si Render asigna un nombre distinto a `fiis-matricula-api.onrender.com`, actualiza los destinos de `frontend/vercel.json`.
+
+Las solicitudes `/api/` pasan por una reescritura de Vercel hacia Render, de modo que las sesiones y el token CSRF siguen siendo del mismo origen para el navegador. El servicio gratuito de Render puede tardar cerca de un minuto en responder después de estar inactivo.
+
