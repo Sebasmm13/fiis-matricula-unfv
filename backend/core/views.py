@@ -426,10 +426,12 @@ class Catalog(APIView):
     def get(self, request):
         student = need_student(request.user)
         period = current_period()
+        year = period.code[:4]
+        annual_periods = Period.objects.filter(code__startswith=year)
         passed = passed_course_ids(student)
         eligible = eligible_course_ids(student, passed)
         sections = (
-            Section.objects.filter(period=period, published=True, course_id__in=eligible)
+            Section.objects.filter(period__in=annual_periods, published=True, course_id__in=eligible)
             .select_related("course")
             .prefetch_related("meetings", "course__prerequisites")
             .annotate(occupied=Count("enrollment_lines"))
@@ -454,7 +456,9 @@ class PreselectionView(APIView):
     def get(self, request):
         student = need_student(request.user)
         period = current_period()
-        rows = Preselection.objects.filter(student=student, period=period).select_related("course", "preferred_section")
+        year = period.code[:4]
+        annual_periods = Period.objects.filter(code__startswith=year)
+        rows = Preselection.objects.filter(student=student, period__in=annual_periods).select_related("course", "preferred_section")
         return Response(
             [
                 {"course_id": row.course_id, "course_name": row.course.name, "section_id": row.preferred_section_id}
@@ -473,9 +477,11 @@ class PreselectionView(APIView):
     def delete(self, request):
         student = need_student(request.user)
         period = current_period()
+        year = period.code[:4]
+        annual_periods = Period.objects.filter(code__startswith=year)
         if not window_open(period, "pre"):
             raise ValidationError("La prematrícula no está abierta.")
-        Preselection.objects.filter(student=student, period=period).delete()
+        Preselection.objects.filter(student=student, period__in=annual_periods).delete()
         audit(request.user, "prematricula.borrada", student, {"period": period.code})
         return Response({"ok": True})
 

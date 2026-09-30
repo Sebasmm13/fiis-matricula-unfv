@@ -527,7 +527,7 @@ function StudentPage({
         <div className="stat-grid">
           <Stat
             label="PERÍODO ACTUAL"
-            value={catalog.period.code}
+            value={`${catalog.period.code.substring(0,4)}-1 y ${catalog.period.code.substring(0,4)}-2`}
             note={
               catalog.period.status === "pre"
                 ? "Prematrícula abierta"
@@ -717,7 +717,7 @@ function StudentPage({
           </div>
         )}
         <div className={`page-head ${me.plan_active === false ? 'disabled-plan' : ''}`}>
-          <span className="eyebrow">PERÍODO {catalog.period.code}</span>
+          <span className="eyebrow">AÑO ACADÉMICO {catalog.period.code.substring(0,4)}</span>
           <h1>Planifica tu matrícula</h1>
           <p>
             Compara secciones, docentes, vacantes y horarios antes de enviar tu
@@ -745,7 +745,7 @@ function StudentPage({
             </span>
           </div>
           <Badge kind={catalog.period.status === "enroll" ? "good" : "blue"}>
-            {catalog.period.code}
+            {catalog.period.code.substring(0,4)}
           </Badge>
         </div>
         <div className="search">

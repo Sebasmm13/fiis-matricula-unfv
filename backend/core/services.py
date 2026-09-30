@@ -131,10 +131,12 @@ def require_id_list(body, field):
 def save_preselection(student, period, section_ids):
     if not window_open(period, "pre"):
         raise ValidationError("La prematrícula no está abierta.")
+    year = period.code[:4]
+    annual_periods = Period.objects.filter(code__startswith=year)
     sections = list(
         Section.objects.select_related("course")
         .prefetch_related("course__prerequisites", "meetings")
-        .filter(id__in=section_ids, period=period, published=True, course__isnull=False)
+        .filter(id__in=section_ids, period__in=annual_periods, published=True, course__isnull=False)
     )
     if len(sections) != len(section_ids):
         raise ValidationError("Una sección no está publicada, no existe o necesita revisión.")
@@ -147,9 +149,9 @@ def save_preselection(student, period, section_ids):
         check_course(student, s.course, passed, eligible)
     # La prematrícula mide demanda: no ocupa vacantes y permite preferencias con posibles cruces.
     with transaction.atomic():
-        Preselection.objects.filter(student=student, period=period).delete()
+        Preselection.objects.filter(student=student, period__in=annual_periods).delete()
         Preselection.objects.bulk_create(
-            [Preselection(student=student, period=period, course=s.course, preferred_section=s) for s in sections]
+            [Preselection(student=student, period=s.period, course=s.course, preferred_section=s) for s in sections]
         )
     return len(sections)
 
@@ -157,6 +159,8 @@ def save_preselection(student, period, section_ids):
 def confirm_enrollment(student, period, section_ids):
     if not window_open(period, "enroll"):
         raise ValidationError("La matrícula no está abierta.")
+    year = period.code[:4]
+    annual_periods = Period.objects.filter(code__startswith=year)
     # PostgreSQL bloquea cada sección en orden estable durante el conteo y la inserción.
     with transaction.atomic():
         Student.objects.select_for_update().get(pk=student.pk)
@@ -166,7 +170,7 @@ def confirm_enrollment(student, period, section_ids):
             Section.objects.select_for_update()
             .select_related("course")
             .prefetch_related("course__prerequisites", "meetings")
-            .filter(id__in=section_ids, period=period, published=True, course__isnull=False)
+            .filter(id__in=section_ids, period__in=annual_periods, published=True, course__isnull=False)
             .order_by("id")
         )
         if len(sections) != len(section_ids):
