@@ -81,15 +81,20 @@ def passed_course_ids(student):
 
 
 def eligible_course_ids(student, passed=None):
-    """Cursos que el alumno puede llevar: únicamente de su ciclo pendiente actual y del ciclo inmediato superior (máximo 2 ciclos), con prerrequisitos aprobados."""
+    """Cursos que el alumno puede llevar: hasta 2 ciclos superiores al ciclo más alto que haya aprobado, con prerrequisitos aprobados."""
     passed = passed if passed is not None else passed_course_ids(student)
     courses = list(Course.objects.filter(plan=student.plan).prefetch_related("prerequisites").order_by("semester"))
     pending = [course for course in courses if course.pk not in passed]
     if not pending:
         return set()
-    mandatory_pending = [course for course in pending if not course.elective_track]
-    current_cycle = mandatory_pending[0].semester if mandatory_pending else pending[0].semester
-    max_cycle = current_cycle + 1
+    
+    if passed:
+        passed_courses = [course for course in courses if course.pk in passed]
+        highest_passed_cycle = max((course.semester for course in passed_courses), default=0)
+    else:
+        highest_passed_cycle = 0
+        
+    max_cycle = highest_passed_cycle + 2
     return {
         course.pk
         for course in pending
