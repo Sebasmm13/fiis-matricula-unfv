@@ -54,7 +54,7 @@ def section_info(section):
     }
 
 
-def course_info(course, passed=None):
+def course_info(course, passed=None, eligible_ids=None):
     return {
         "id": course.id,
         "plan_id": course.plan_id,
@@ -69,6 +69,7 @@ def course_info(course, passed=None):
         "academic_data_verified": course.academic_data_verified,
         "prerequisites": [{"id": p.id, "code": p.curricular_code, "name": p.name} for p in course.prerequisites.all()],
         "passed": bool(passed is not None and course.id in passed),
+        "eligible": bool(eligible_ids is not None and course.id in eligible_ids),
     }
 
 
@@ -80,7 +81,7 @@ def passed_course_ids(student):
 
 
 def eligible_course_ids(student, passed=None):
-    """Cursos que el alumno puede llevar en su siguiente ciclo pendiente."""
+    """Cursos que el alumno puede llevar: únicamente de su ciclo pendiente actual y del ciclo inmediato superior (máximo 2 ciclos), con prerrequisitos aprobados."""
     passed = passed if passed is not None else passed_course_ids(student)
     courses = list(Course.objects.filter(plan=student.plan).prefetch_related("prerequisites").order_by("semester"))
     pending = [course for course in courses if course.pk not in passed]
@@ -88,10 +89,11 @@ def eligible_course_ids(student, passed=None):
         return set()
     mandatory_pending = [course for course in pending if not course.elective_track]
     current_cycle = mandatory_pending[0].semester if mandatory_pending else pending[0].semester
+    max_cycle = current_cycle + 1
     return {
         course.pk
         for course in pending
-        if all(prerequisite.pk in passed for prerequisite in course.prerequisites.all())
+        if course.semester <= max_cycle and all(prerequisite.pk in passed for prerequisite in course.prerequisites.all())
     }
 
 

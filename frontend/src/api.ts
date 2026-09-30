@@ -55,6 +55,7 @@ export interface Course {
   academic_data_verified: boolean;
   prerequisites: { id: number; code: string; name: string }[];
   passed: boolean;
+  eligible?: boolean;
 }
 export interface Catalog {
   period: { code: string; status: string; max_credits: number };

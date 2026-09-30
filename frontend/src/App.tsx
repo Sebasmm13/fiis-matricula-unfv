@@ -449,11 +449,8 @@ function StudentPage({
   }, [courses, selected]);
 
   const available = useMemo(
-    () =>
-      catalog?.period.status === "pre"
-        ? courses.filter((c) => !c.passed)
-        : courses.filter((c) => sections.some((s) => s.course_id === c.id)),
-    [courses, sections, catalog?.period.status],
+    () => courses.filter((c) => !c.passed && c.eligible),
+    [courses],
   );
   const picked = Object.entries(selected)
     .filter(([_, id]) => !!id)

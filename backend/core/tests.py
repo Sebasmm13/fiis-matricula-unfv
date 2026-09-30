@@ -286,7 +286,7 @@ class EndToEndApiTests(TestCase):
         token = client.get("/api/auth/csrf/").json()["csrfToken"]
         catalog = client.get("/api/catalog/").json()
         course_semesters = {course["id"]: course["semester"] for course in catalog["courses"]}
-        self.assertEqual({course_semesters[section["course_id"]] for section in catalog["sections"]}, {2})
+        self.assertTrue({course_semesters[section["course_id"]] for section in catalog["sections"]}.issubset({2, 3}))
         sections = [s for s in catalog["sections"] if s["curricular_code"] == "09"]
         self.assertGreaterEqual(len(sections), 2)
         selected = sections[0]["id"]

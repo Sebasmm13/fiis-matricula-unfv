@@ -8,7 +8,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.mail import send_mail
 from django.db import transaction
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.http import HttpResponse, JsonResponse
 from django.middleware.csrf import get_token
 from django.utils import timezone
@@ -69,6 +69,10 @@ def login_view(request):
     if "@" in identifier:
         matches = list(User.objects.filter(email__iexact=identifier).values_list("username", flat=True)[:2])
         username = matches[0] if len(matches) == 1 else ""
+    else:
+        user_match = User.objects.filter(Q(username__iexact=identifier) | Q(student__student_code__iexact=identifier)).first()
+        if user_match:
+            username = user_match.username
     user = authenticate(request, username=username, password=body.get("password", ""))
     if not user or not user.is_active or not available_roles(user):
         return JsonResponse({"detail": "Credenciales inválidas"}, status=400)
@@ -441,7 +445,7 @@ class Catalog(APIView):
             {
                 "period": {"code": period.code, "status": period.status, "max_credits": period.max_credits},
                 "courses": [
-                    course_info(c, passed)
+                    course_info(c, passed, eligible)
                     for c in Course.objects.filter(plan=student.plan)
                     .select_related("plan")
                     .prefetch_related("prerequisites")
