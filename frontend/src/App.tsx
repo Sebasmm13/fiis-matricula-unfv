@@ -1348,7 +1348,7 @@ function AdminPage({
   >([]);
   const [error, setError] = useState("");
   const [sectionSearch, setSectionSearch] = useState("");
-  const [showPhaseConfirm, setShowPhaseConfirm] = useState<"PRE_ENROLL" | "ENROLL" | null>(null);
+  const [showPhaseConfirm, setShowPhaseConfirm] = useState<"PRE_ENROLL" | "ENROLL" | "DRAFT" | null>(null);
   const [ofertaPeriod, setOfertaPeriod] = useState("2027-2");
   const [link, setLink] = useState<Record<number, number>>({});
   async function refresh() {
@@ -1480,9 +1480,9 @@ function AdminPage({
         const p2027_1 = data.periods.find(p => p.code === "2027-1");
         const p2027_2 = data.periods.find(p => p.code === "2027-2");
 
-        const updatePhases = async (newState: "PRE_ENROLL" | "ENROLL") => {
+        const updatePhases = async (newState: "PRE_ENROLL" | "ENROLL" | "DRAFT") => {
           try {
-            const status = newState === "PRE_ENROLL" ? "pre" : "enroll";
+            const status = newState === "PRE_ENROLL" ? "pre" : (newState === "ENROLL" ? "enroll" : "draft");
             if (p2027_1) await api(`/admin/periods/${p2027_1.id}/`, "PATCH", { status, convalidation_active: true });
             if (p2027_2) await api(`/admin/periods/${p2027_2.id}/`, "PATCH", { status, convalidation_active: true });
             inform(`Fase actualizada a ${newState} correctamente`);
@@ -1529,10 +1529,10 @@ function AdminPage({
               <h3>Fase 1: Pre-Matrícula</h3>
               <p style={{marginBottom: '15px', color: 'var(--text-soft)'}}>Habilita la vista de cursos y horarios. Los alumnos podrán armar su horario sin poder matricularse aún.</p>
               <button 
-                className="btn primary"
-                onClick={() => setShowPhaseConfirm("PRE_ENROLL")}
+                className={`btn ${currentPeriod?.status === "pre" ? "outline" : "primary"}`}
+                onClick={() => setShowPhaseConfirm(currentPeriod?.status === "pre" ? "DRAFT" : "PRE_ENROLL")}
               >
-                Habilitar Pre-Matrícula
+                {currentPeriod?.status === "pre" ? "Desactivar Pre-Matrícula" : "Habilitar Pre-Matrícula"}
               </button>
             </div>
             
@@ -1540,10 +1540,10 @@ function AdminPage({
               <h3>Fase 2: Matrícula Oficial</h3>
               <p style={{marginBottom: '15px', color: 'var(--text-soft)'}}>Abre la matrícula oficial 2027-I y II. Los alumnos podrán confirmar su selección según su orden de mérito.</p>
               <button 
-                className="btn primary"
-                onClick={() => setShowPhaseConfirm("ENROLL")}
+                className={`btn ${currentPeriod?.status === "enroll" ? "outline" : "primary"}`}
+                onClick={() => setShowPhaseConfirm(currentPeriod?.status === "enroll" ? "DRAFT" : "ENROLL")}
               >
-                Aperturar Matrícula 2027-I y II
+                {currentPeriod?.status === "enroll" ? "Cerrar Matrícula Oficial" : "Aperturar Matrícula 2027-I y II"}
               </button>
             </div>
           </div>
@@ -1553,7 +1553,7 @@ function AdminPage({
               <div className="panel" style={{ maxWidth: '400px', width: '90%', textAlign: 'center', margin: '20px' }}>
                 <h2 style={{ marginBottom: '1rem', color: 'var(--text-strong)' }}>Confirmar Acción</h2>
                 <p style={{ marginBottom: '2rem', color: 'var(--text-soft)' }}>
-                  ¿Estás seguro de que deseas cambiar la fase a {showPhaseConfirm === "PRE_ENROLL" ? "Pre-Matrícula" : "Matrícula Oficial"} para los ciclos 2027-1 y 2027-2?
+                  ¿Estás seguro de que deseas cambiar la fase a {showPhaseConfirm === "PRE_ENROLL" ? "Pre-Matrícula" : (showPhaseConfirm === "ENROLL" ? "Matrícula Oficial" : "Borrador (Desactivado)")} para los ciclos 2027-1 y 2027-2?
                 </p>
                 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
                   <button className="btn outline" onClick={() => setShowPhaseConfirm(null)}>Cancelar</button>

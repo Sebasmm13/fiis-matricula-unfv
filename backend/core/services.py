@@ -88,7 +88,7 @@ def eligible_course_ids(student, passed=None):
     return {
         course.pk
         for course in pending
-        if course.semester <= current_cycle
+        if course.semester <= current_cycle + 2
         and all(prerequisite.pk in passed for prerequisite in course.prerequisites.all())
     }
 
