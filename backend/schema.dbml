@@ -1,0 +1,242 @@
+Table auth_group {
+  id integer [not null, pk]
+  name character varying(150) [not null]
+}
+
+Table auth_group_permissions {
+  id bigint [not null, pk]
+  group_id integer [not null]
+  permission_id integer [not null]
+}
+
+Table auth_permission {
+  id integer [not null, pk]
+  name character varying(255) [not null]
+  content_type_id integer [not null]
+  codename character varying(100) [not null]
+}
+
+Table auth_user {
+  id integer [not null, pk]
+  password character varying(128) [not null]
+  last_login timestamp with time zone
+  is_superuser boolean [not null]
+  username character varying(150) [not null]
+  first_name character varying(150) [not null]
+  last_name character varying(150) [not null]
+  email character varying(254) [not null]
+  is_staff boolean [not null]
+  is_active boolean [not null]
+  date_joined timestamp with time zone [not null]
+}
+
+Table auth_user_groups {
+  id bigint [not null, pk]
+  user_id integer [not null]
+  group_id integer [not null]
+}
+
+Table auth_user_user_permissions {
+  id bigint [not null, pk]
+  user_id integer [not null]
+  permission_id integer [not null]
+}
+
+Table core_accountsecurity {
+  id bigint [not null, pk]
+  must_change_password boolean [not null]
+  activation_pending boolean [not null]
+  password_changed_at timestamp with time zone
+  user_id integer [not null]
+}
+
+Table core_auditlog {
+  id bigint [not null, pk]
+  action character varying(80) [not null]
+  target character varying(160) [not null]
+  detail jsonb [not null]
+  created_at timestamp with time zone [not null]
+  actor_id integer
+}
+
+Table core_course {
+  id bigint [not null, pk]
+  curricular_code character varying(20) [not null]
+  name character varying(220) [not null]
+  semester smallint [not null]
+  credits smallint
+  theory_hours smallint
+  practice_hours smallint
+  elective_track character varying(120) [not null]
+  plan_id bigint [not null]
+  academic_data_verified boolean [not null]
+}
+
+Table core_course_prerequisites {
+  id bigint [not null, pk]
+  from_course_id bigint [not null]
+  to_course_id bigint [not null]
+}
+
+Table core_enrollment {
+  id bigint [not null, pk]
+  confirmed_at timestamp with time zone [not null]
+  period_id bigint [not null]
+  student_id bigint [not null]
+}
+
+Table core_enrollmentline {
+  id bigint [not null, pk]
+  course_id bigint [not null]
+  enrollment_id bigint [not null]
+  section_id bigint [not null]
+  snapshot jsonb [not null]
+}
+
+Table core_finalgrade {
+  id bigint [not null, pk]
+  score numeric [not null]
+  passed boolean [not null]
+  course_id bigint [not null]
+  period_id bigint [not null]
+  student_id bigint [not null]
+}
+
+Table core_meeting {
+  id bigint [not null, pk]
+  day smallint [not null]
+  start time without time zone [not null]
+  end time without time zone [not null]
+  section_id bigint [not null]
+}
+
+Table core_period {
+  id bigint [not null, pk]
+  code character varying(20) [not null]
+  status character varying(20) [not null]
+  max_credits smallint [not null]
+  pre_start timestamp with time zone
+  pre_end timestamp with time zone
+  enroll_start timestamp with time zone
+  enroll_end timestamp with time zone
+  is_current boolean [not null]
+}
+
+Table core_plan {
+  id bigint [not null, pk]
+  name character varying(140) [not null]
+  active boolean [not null]
+  source character varying(250) [not null]
+}
+
+Table core_preselection {
+  id bigint [not null, pk]
+  updated_at timestamp with time zone [not null]
+  course_id bigint [not null]
+  period_id bigint [not null]
+  preferred_section_id bigint
+  student_id bigint [not null]
+}
+
+Table core_profilephoto {
+  id bigint [not null, pk]
+  image bytea [not null]
+  updated_at timestamp with time zone [not null]
+  user_id integer [not null]
+}
+
+Table core_section {
+  id bigint [not null, pk]
+  section_code character varying(15) [not null]
+  official_code character varying(30) [not null]
+  raw_name character varying(220) [not null]
+  cycle character varying(10) [not null]
+  classroom character varying(60) [not null]
+  capacity smallint [not null]
+  published boolean [not null]
+  source_row character varying(30) [not null]
+  course_id bigint
+  period_id bigint [not null]
+  teacher_id bigint
+}
+
+Table core_student {
+  id bigint [not null, pk]
+  student_code character varying(20) [not null]
+  full_name character varying(180) [not null]
+  active boolean [not null]
+  plan_id bigint [not null]
+  user_id integer [not null]
+}
+
+Table core_teacher {
+  id bigint [not null, pk]
+  name character varying(180) [not null]
+  active boolean [not null]
+  user_id integer
+}
+
+Table django_admin_log {
+  id integer [not null, pk]
+  action_time timestamp with time zone [not null]
+  object_id text
+  object_repr character varying(200) [not null]
+  action_flag smallint [not null]
+  change_message text [not null]
+  content_type_id integer
+  user_id integer [not null]
+}
+
+Table django_content_type {
+  id integer [not null, pk]
+  app_label character varying(100) [not null]
+  model character varying(100) [not null]
+}
+
+Table django_migrations {
+  id bigint [not null, pk]
+  app character varying(255) [not null]
+  name character varying(255) [not null]
+  applied timestamp with time zone [not null]
+}
+
+Table django_session {
+  session_key character varying(40) [not null, pk]
+  session_data text [not null]
+  expire_date timestamp with time zone [not null]
+}
+
+Ref: auth_permission.content_type_id > django_content_type.id
+Ref: auth_group_permissions.group_id > auth_group.id
+Ref: auth_group_permissions.permission_id > auth_permission.id
+Ref: auth_user_groups.user_id > auth_user.id
+Ref: auth_user_groups.group_id > auth_group.id
+Ref: auth_user_user_permissions.user_id > auth_user.id
+Ref: auth_user_user_permissions.permission_id > auth_permission.id
+Ref: django_admin_log.content_type_id > django_content_type.id
+Ref: django_admin_log.user_id > auth_user.id
+Ref: core_enrollment.student_id > core_student.id
+Ref: core_auditlog.actor_id > auth_user.id
+Ref: core_course.plan_id > core_plan.id
+Ref: core_course_prerequisites.from_course_id > core_course.id
+Ref: core_course_prerequisites.to_course_id > core_course.id
+Ref: core_enrollment.period_id > core_period.id
+Ref: core_section.course_id > core_course.id
+Ref: core_section.period_id > core_period.id
+Ref: core_section.teacher_id > core_teacher.id
+Ref: core_meeting.section_id > core_section.id
+Ref: core_enrollmentline.course_id > core_course.id
+Ref: core_enrollmentline.enrollment_id > core_enrollment.id
+Ref: core_enrollmentline.section_id > core_section.id
+Ref: core_student.plan_id > core_plan.id
+Ref: core_student.user_id > auth_user.id
+Ref: core_preselection.course_id > core_course.id
+Ref: core_preselection.period_id > core_period.id
+Ref: core_preselection.preferred_section_id > core_section.id
+Ref: core_preselection.student_id > core_student.id
+Ref: core_finalgrade.course_id > core_course.id
+Ref: core_finalgrade.period_id > core_period.id
+Ref: core_finalgrade.student_id > core_student.id
+Ref: core_teacher.user_id > auth_user.id
+Ref: core_profilephoto.user_id > auth_user.id
+Ref: core_accountsecurity.user_id > auth_user.id

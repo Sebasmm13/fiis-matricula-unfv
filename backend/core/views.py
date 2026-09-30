@@ -403,7 +403,7 @@ class ConvalidationView(APIView):
             plan_2019 = Plan.objects.filter(name__icontains="adjunta").first()
             courses_2019 = {c.curricular_code: c for c in Course.objects.filter(plan=plan_2019)}
             
-            grades = FinalGrade.objects.filter(student=student, status='Aprobado').select_related('course')
+            grades = FinalGrade.objects.filter(student=student, passed=True).select_related('course')
             for fg in grades:
                 code_10 = fg.course.curricular_code
                 if code_10 in CONVALIDATION_MAP:
@@ -412,7 +412,7 @@ class ConvalidationView(APIView):
                         c19 = courses_2019[code_19]
                         FinalGrade.objects.update_or_create(
                             student=student, course=c19, period=fg.period,
-                            defaults={"grade": fg.grade, "status": "Aprobado"}
+                            defaults={"score": fg.score, "passed": True}
                         )
             
             student.plan = plan_2019
