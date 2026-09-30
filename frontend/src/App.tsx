@@ -429,7 +429,7 @@ function StudentPage({
       setPre(p);
       setConvalidation(conv);
       setSelected(
-        Object.fromEntries(p.map((x) => [x.course_id, x.section_id])),
+        Object.fromEntries(p.map((x) => [x.course_id, x.section_id || x.course_id])),
       );
     } catch (e) {
       setError(explain(e));
@@ -449,43 +449,64 @@ function StudentPage({
   }, [courses, selected]);
 
   const available = useMemo(
-    () => courses.filter((c) => sections.some((s) => s.course_id === c.id)),
-    [courses, sections],
+    () =>
+      catalog?.period.status === "pre"
+        ? courses.filter((c) => !c.passed)
+        : courses.filter((c) => sections.some((s) => s.course_id === c.id)),
+    [courses, sections, catalog?.period.status],
   );
-  const picked = Object.values(selected)
-    .map((id) => sections.find((x) => x.id === id))
-    .filter((x): x is Section => !!x);
+  const picked = Object.entries(selected)
+    .filter(([_, id]) => !!id)
+    .map(([cidStr, id]) => {
+      const cid = Number(cidStr);
+      const sec = sections.find((x) => x.id === id);
+      const course = courses.find((x) => x.id === cid || x.id === sec?.course_id);
+      return {
+        id: id,
+        course_id: cid,
+        course_name: course?.name || sec?.course_name || "Curso",
+        section: sec ? `Sección ${sec.section}` : "Pre-selección por curso",
+        teacher: sec ? sec.teacher : "Docente por asignar",
+        credits: course?.credits || 0,
+        is_section: !!sec,
+      };
+    });
   const credits = picked.reduce(
-    (a, s) => a + (courses.find((c) => c.id === s.course_id)?.credits || 0),
+    (a, s) => a + (s.credits || 0),
     0,
   );
-  const conflicts = picked.flatMap((a, i) =>
-    picked
-      .slice(i + 1)
-      .filter((b) => overlap(a, b))
-      .map(
-        (b) =>
-          `${a.course_name} (${a.section}) y ${b.course_name} (${b.section})`,
-      ),
-  );
+  const conflicts = picked
+    .filter((x) => x.is_section)
+    .map((s) => sections.find((sec) => sec.id === s.id)!)
+    .filter(Boolean)
+    .flatMap((a, i, arr) =>
+      arr
+        .slice(i + 1)
+        .filter((b) => overlap(a, b))
+        .map(
+          (b) =>
+            `${a.course_name} (${a.section}) y ${b.course_name} (${b.section})`,
+        ),
+    );
   const prerequisites = (c: Course) =>
     c.prerequisites.filter((p) => !courses.find((x) => x.id === p.id)?.passed);
   async function action(kind: "pre" | "enroll") {
     setBusy(true);
     setError("");
     try {
-      const ids = picked.map((s) => s.id);
-      if (!ids.length) throw Error("Selecciona al menos una sección.");
+      if (!picked.length) throw Error("Selecciona al menos un curso o sección.");
       if (kind === "enroll" && conflicts.length)
         throw Error("Hay cruces de horario en la selección.");
       if (kind === "pre") {
-        await api("/preselection/", "POST", { section_ids: ids });
+        const section_ids = picked.filter((p) => p.is_section).map((p) => p.id);
+        const course_ids = picked.map((p) => p.course_id);
+        await api("/preselection/", "POST", { section_ids, course_ids });
         inform(
           "Prematrícula guardada. Tus preferencias ayudan a estimar la demanda y no ocupan vacantes.",
         );
       } else {
         const confirmed = await api<{ id: number }>("/enrollments/", "POST", {
-          section_ids: ids,
+          section_ids: picked.map((s) => s.id),
         });
         inform(
           "Matrícula confirmada. La constancia PDF se descargará ahora y seguirá disponible en Inicio.",
@@ -848,8 +869,29 @@ function StudentPage({
                           </Badge>
                         </button>
                       ))}
+                      {opts.length === 0 && catalog.period.status === "pre" && (
+                        <button
+                          className={`option ${selected[c.id] ? "chosen" : ""}`}
+                          onClick={() =>
+                            setSelected((old) => ({
+                              ...old,
+                              [c.id]: old[c.id] ? 0 : c.id,
+                            }))
+                          }
+                          disabled={c.passed || !!missing.length || !!blockedTrack}
+                        >
+                          <span className="option-radio">
+                            {selected[c.id] ? "✓" : ""}
+                          </span>
+                          <span className="option-body">
+                            <strong>Preseleccionar curso para estimar demanda</strong>
+                            <span>Aún no hay secciones creadas; tu voto servirá para aperturar vacantes.</span>
+                          </span>
+                          <Badge kind="blue">Prematrícula</Badge>
+                        </button>
+                      )}
                     </div>
-                    {opts.length < 2 && (
+                    {opts.length < 2 && catalog.period.status !== "pre" && (
                       <div className="small-warning">
                         Por ahora hay una opción en el archivo recibido. El
                         administrador puede abrir otra sección.

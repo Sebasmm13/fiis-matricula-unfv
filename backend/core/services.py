@@ -5,7 +5,7 @@ from django.db.models import Count
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
-from .models import Course, Enrollment, EnrollmentLine, FinalGrade, Preselection, Section, Student
+from .models import Course, Enrollment, EnrollmentLine, FinalGrade, Period, Preselection, Section, Student
 
 DAYS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
 
@@ -73,7 +73,10 @@ def course_info(course, passed=None):
 
 
 def passed_course_ids(student):
-    return set(FinalGrade.objects.filter(student=student, passed=True).values_list("course_id", flat=True))
+    from .models import EnrollmentLine
+    passed = set(FinalGrade.objects.filter(student=student, passed=True).values_list("course_id", flat=True))
+    enrolled = set(EnrollmentLine.objects.filter(enrollment__student=student).values_list("section__course_id", flat=True))
+    return passed | enrolled
 
 
 def eligible_course_ids(student, passed=None):
@@ -128,32 +131,48 @@ def require_id_list(body, field):
     return ids
 
 
-def save_preselection(student, period, section_ids):
+def save_preselection(student, period, section_ids=None, course_ids=None):
     if not window_open(period, "pre"):
         raise ValidationError("La prematrícula no está abierta.")
     year = period.code[:4]
     annual_periods = Period.objects.filter(code__startswith=year)
-    sections = list(
-        Section.objects.select_related("course")
-        .prefetch_related("course__prerequisites", "meetings")
-        .filter(id__in=section_ids, period__in=annual_periods, published=True, course__isnull=False)
-    )
-    if len(sections) != len(section_ids):
-        raise ValidationError("Una sección no está publicada, no existe o necesita revisión.")
-    courses = [s.course_id for s in sections]
-    if len(set(courses)) != len(courses):
-        raise ValidationError("Elige una sola sección por curso.")
+    section_ids = section_ids or []
+    course_ids = course_ids or []
+    
+    pre_objs = []
     passed = passed_course_ids(student)
     eligible = eligible_course_ids(student, passed)
-    for s in sections:
-        check_course(student, s.course, passed, eligible)
-    # La prematrícula mide demanda: no ocupa vacantes y permite preferencias con posibles cruces.
+
+    if section_ids:
+        sections = list(
+            Section.objects.select_related("course")
+            .prefetch_related("course__prerequisites", "meetings")
+            .filter(id__in=section_ids, period__in=annual_periods, published=True, course__isnull=False)
+        )
+        if len(sections) != len(section_ids):
+            raise ValidationError("Una sección no está publicada, no existe o necesita revisión.")
+        courses_in_sections = [s.course_id for s in sections]
+        if len(set(courses_in_sections)) != len(courses_in_sections):
+            raise ValidationError("Elige una sola sección por curso.")
+        for s in sections:
+            check_course(student, s.course, passed, eligible)
+            pre_objs.append(Preselection(student=student, period=s.period, course=s.course, preferred_section=s))
+
+    if course_ids:
+        added_course_ids = {obj.course_id for obj in pre_objs}
+        cids_to_add = [cid for cid in course_ids if cid not in added_course_ids]
+        courses = list(Course.objects.filter(id__in=cids_to_add))
+        for c in courses:
+            check_course(student, c, passed, eligible)
+            pre_objs.append(Preselection(student=student, period=period, course=c, preferred_section=None))
+
+    if not pre_objs:
+        raise ValidationError("Debes elegir al menos un curso o sección.")
+
     with transaction.atomic():
         Preselection.objects.filter(student=student, period__in=annual_periods).delete()
-        Preselection.objects.bulk_create(
-            [Preselection(student=student, period=s.period, course=s.course, preferred_section=s) for s in sections]
-        )
-    return len(sections)
+        Preselection.objects.bulk_create(pre_objs)
+    return len(pre_objs)
 
 
 def confirm_enrollment(student, period, section_ids):

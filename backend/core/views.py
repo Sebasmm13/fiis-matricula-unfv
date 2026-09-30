@@ -469,8 +469,9 @@ class PreselectionView(APIView):
     def post(self, request):
         student = need_student(request.user)
         period = current_period()
-        ids = require_id_list(request.data, "section_ids")
-        count = save_preselection(student, period, ids)
+        section_ids = request.data.get("section_ids") or []
+        course_ids = request.data.get("course_ids") or []
+        count = save_preselection(student, period, section_ids=section_ids, course_ids=course_ids)
         audit(request.user, "prematricula.guardada", student, {"period": period.code, "courses": count})
         return Response({"saved": count, "message": "Preferencias guardadas. No ocupan vacantes."})
 
