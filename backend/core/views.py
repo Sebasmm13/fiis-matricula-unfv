@@ -367,7 +367,7 @@ class ConvalidationView(APIView):
         if student.plan.name.startswith("Ingenier"):
             return Response({"active": True, "done": True})
 
-        grades = FinalGrade.objects.filter(student=student, status='Aprobado').select_related('course')
+        grades = FinalGrade.objects.filter(student=student, passed=True).select_related('course')
         
         matches, unmatched = [], []
         plan_2019 = Plan.objects.filter(name__icontains="adjunta").first()
@@ -382,11 +382,11 @@ class ConvalidationView(APIView):
                 if code_19 in courses_2019:
                     c19 = courses_2019[code_19]
                     matches.append({
-                        "old_code": code_10, "old_name": fg.course.name, "old_grade": fg.grade,
+                        "old_code": code_10, "old_name": fg.course.name, "old_grade": fg.score,
                         "new_code": c19.curricular_code, "new_name": c19.name
                     })
-                else: unmatched.append({"old_code": code_10, "old_name": fg.course.name, "old_grade": fg.grade})
-            else: unmatched.append({"old_code": code_10, "old_name": fg.course.name, "old_grade": fg.grade})
+                else: unmatched.append({"old_code": code_10, "old_name": fg.course.name, "old_grade": fg.score})
+            else: unmatched.append({"old_code": code_10, "old_name": fg.course.name, "old_grade": fg.score})
                 
         return Response({"active": True, "done": False, "matches": matches, "unmatched": unmatched})
 
