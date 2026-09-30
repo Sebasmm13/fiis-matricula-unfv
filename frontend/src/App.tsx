@@ -2226,7 +2226,7 @@ function NewSection({
           value={period}
           onChange={(e) => setPeriod(Number(e.target.value))}
         >
-          {data.periods.filter((p) => ["HISTORICO", "2026-1", "2026-2"].includes(p.code)).map((p) => (
+          {data.periods.map((p) => (
             <option key={p.id} value={p.id}>
               {p.code}
             </option>
