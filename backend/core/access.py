@@ -37,7 +37,7 @@ def identity(user, role=None):
 
 
 def need_student(user):
-    if user.is_staff or not hasattr(user, "student") or not user.student.active:
+    if not hasattr(user, "student") or not user.student.active:
         raise PermissionDenied("Esta función requiere un alumno activo.")
     return user.student
 
