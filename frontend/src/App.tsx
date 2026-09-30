@@ -1349,7 +1349,7 @@ function AdminPage({
   const [error, setError] = useState("");
   const [sectionSearch, setSectionSearch] = useState("");
   const [showPhaseConfirm, setShowPhaseConfirm] = useState<"PRE_ENROLL" | "ENROLL" | "DRAFT" | null>(null);
-  const [ofertaPeriod, setOfertaPeriod] = useState("2027-2");
+  const [ofertaPeriod, setOfertaPeriod] = useState("");
   const [link, setLink] = useState<Record<number, number>>({});
   async function refresh() {
     try {
@@ -1361,6 +1361,10 @@ function AdminPage({
       ]);
       setDemand(dm);
       setAudit(logs);
+      if (!ofertaPeriod) {
+        const current = d.periods.find(p => p.is_current);
+        if (current) setOfertaPeriod(current.code);
+      }
     } catch (e) {
       setError(explain(e));
     }
@@ -1477,14 +1481,11 @@ function AdminPage({
       )}
       {page === "admin" && (() => {
         const currentPeriod = data.periods.find(p => p.is_current);
-        const p2027_1 = data.periods.find(p => p.code === "2027-1");
-        const p2027_2 = data.periods.find(p => p.code === "2027-2");
 
         const updatePhases = async (newState: "PRE_ENROLL" | "ENROLL" | "DRAFT") => {
           try {
             const status = newState === "PRE_ENROLL" ? "pre" : (newState === "ENROLL" ? "enroll" : "draft");
-            if (p2027_1) await api(`/admin/periods/${p2027_1.id}/`, "PATCH", { status, convalidation_active: true });
-            if (p2027_2) await api(`/admin/periods/${p2027_2.id}/`, "PATCH", { status, convalidation_active: true });
+            if (currentPeriod) await api(`/admin/periods/${currentPeriod.id}/`, "PATCH", { status });
             inform(`Fase actualizada a ${newState} correctamente`);
             await refresh();
           } catch (e) {
@@ -1492,17 +1493,24 @@ function AdminPage({
           }
         };
 
+        const currentPhaseName = currentPeriod?.status === "pre" ? "Fase 1: Pre-Matrícula" 
+                               : currentPeriod?.status === "enroll" ? "Fase 2: Matrícula Oficial" 
+                               : "Borrador (Inactivo)";
+
         return (
         <div className="panel spaced">
           <span className="eyebrow">CENTRO DE CONTROL DE MATRÍCULA</span>
-          <h2>Apertura Anual 2027</h2>
+          <h2>Apertura del Periodo Actual ({currentPeriod?.code})</h2>
           <p>
-            Desde aquí podrás habilitar la fase previa de revisión de horarios y la matrícula oficial anual para los ciclos 2027-I y 2027-II.
+            Desde aquí podrás habilitar la fase previa de revisión de horarios y la matrícula oficial para el ciclo actual.
           </p>
+          <div style={{ marginTop: '15px', padding: '15px', background: 'var(--surface-hover)', borderRadius: '8px', border: '1px solid var(--border)', fontWeight: 'bold', fontSize: '1.2rem' }}>
+            Estado Actual: <span style={{ color: currentPeriod?.status === "draft" ? "var(--text-soft)" : "var(--primary)" }}>{currentPhaseName}</span>
+          </div>
           
           <div style={{ display: 'flex', gap: '20px', marginTop: '20px', flexWrap: 'wrap' }}>
             
-            <div className="panel" style={{ flex: 1, minWidth: '300px', border: '1px solid var(--border)', background: 'var(--surface)' }}>
+            <div className="panel" style={{ flex: 1, minWidth: '300px', border: currentPeriod?.status === "draft" ? '2px solid var(--border)' : '1px solid var(--border)', background: 'var(--surface)' }}>
               <h3>Fase 0: Migración y Convalidación</h3>
               <p style={{marginBottom: '15px', color: 'var(--text-soft)'}}>Activa el proceso de convalidación obligatoria para los alumnos rezagados de la Malla 2010.</p>
               {currentPeriod && (
@@ -1525,25 +1533,25 @@ function AdminPage({
               )}
             </div>
 
-            <div className="panel" style={{ flex: 1, minWidth: '300px', border: '1px solid var(--border)', background: 'var(--surface)' }}>
+            <div className="panel" style={{ flex: 1, minWidth: '300px', border: currentPeriod?.status === "pre" ? '2px solid var(--primary)' : '1px solid var(--border)', background: 'var(--surface)' }}>
               <h3>Fase 1: Pre-Matrícula</h3>
               <p style={{marginBottom: '15px', color: 'var(--text-soft)'}}>Habilita la vista de cursos y horarios. Los alumnos podrán armar su horario sin poder matricularse aún.</p>
               <button 
                 className={`btn ${currentPeriod?.status === "pre" ? "outline" : "primary"}`}
                 onClick={() => setShowPhaseConfirm(currentPeriod?.status === "pre" ? "DRAFT" : "PRE_ENROLL")}
               >
-                {currentPeriod?.status === "pre" ? "Desactivar Pre-Matrícula" : "Habilitar Pre-Matrícula"}
+                {currentPeriod?.status === "pre" ? "Desactivar Pre-Matrícula (Volver a Borrador)" : "Activar Pre-Matrícula"}
               </button>
             </div>
             
-            <div className="panel" style={{ flex: 1, minWidth: '300px', border: '1px solid var(--border)', background: 'var(--surface)' }}>
+            <div className="panel" style={{ flex: 1, minWidth: '300px', border: currentPeriod?.status === "enroll" ? '2px solid var(--primary)' : '1px solid var(--border)', background: 'var(--surface)' }}>
               <h3>Fase 2: Matrícula Oficial</h3>
-              <p style={{marginBottom: '15px', color: 'var(--text-soft)'}}>Abre la matrícula oficial 2027-I y II. Los alumnos podrán confirmar su selección según su orden de mérito.</p>
+              <p style={{marginBottom: '15px', color: 'var(--text-soft)'}}>Abre la matrícula oficial. Los alumnos podrán confirmar su selección según su orden de mérito.</p>
               <button 
                 className={`btn ${currentPeriod?.status === "enroll" ? "outline" : "primary"}`}
                 onClick={() => setShowPhaseConfirm(currentPeriod?.status === "enroll" ? "DRAFT" : "ENROLL")}
               >
-                {currentPeriod?.status === "enroll" ? "Cerrar Matrícula Oficial" : "Aperturar Matrícula 2027-I y II"}
+                {currentPeriod?.status === "enroll" ? "Cerrar Matrícula Oficial (Volver a Borrador)" : "Activar Matrícula Oficial"}
               </button>
             </div>
           </div>
@@ -1553,7 +1561,7 @@ function AdminPage({
               <div className="panel" style={{ maxWidth: '400px', width: '90%', textAlign: 'center', margin: '20px' }}>
                 <h2 style={{ marginBottom: '1rem', color: 'var(--text-strong)' }}>Confirmar Acción</h2>
                 <p style={{ marginBottom: '2rem', color: 'var(--text-soft)' }}>
-                  ¿Estás seguro de que deseas cambiar la fase a {showPhaseConfirm === "PRE_ENROLL" ? "Pre-Matrícula" : (showPhaseConfirm === "ENROLL" ? "Matrícula Oficial" : "Borrador (Desactivado)")} para los ciclos 2027-1 y 2027-2?
+                  ¿Estás seguro de que deseas cambiar la fase a {showPhaseConfirm === "PRE_ENROLL" ? "Pre-Matrícula" : (showPhaseConfirm === "ENROLL" ? "Matrícula Oficial" : "Borrador (Desactivado)")} para el ciclo {currentPeriod?.code}?
                 </p>
                 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
                   <button className="btn outline" onClick={() => setShowPhaseConfirm(null)}>Cancelar</button>
@@ -1602,8 +1610,15 @@ function AdminPage({
                 <span className="eyebrow">SECCIONES CARGADAS</span>
                 <h2>Oferta y equivalencias</h2>
                   <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-                    <button className={ofertaPeriod === "2027-1" ? "btn primary" : "btn"} onClick={() => setOfertaPeriod("2027-1")}>2027-1</button>
-                    <button className={ofertaPeriod === "2027-2" ? "btn primary" : "btn"} onClick={() => setOfertaPeriod("2027-2")}>2027-2</button>
+                    {data.periods.map(p => (
+                      <button 
+                        key={p.code} 
+                        className={ofertaPeriod === p.code ? "btn primary" : "btn"} 
+                        onClick={() => setOfertaPeriod(p.code)}
+                      >
+                        {p.code}
+                      </button>
+                    ))}
                   </div>
               </div>
               <input
