@@ -1476,6 +1476,21 @@ function AdminPage({
       )}
       {page === "admin" && (() => {
         const currentPeriod = data.periods.find(p => p.is_current);
+        const p2027_1 = data.periods.find(p => p.code === "2027-1");
+        const p2027_2 = data.periods.find(p => p.code === "2027-2");
+
+        const updatePhases = async (newState: "PRE_ENROLL" | "ENROLL") => {
+          if (!confirm(`¿Estás seguro de cambiar la fase a ${newState} para 2027-1 y 2027-2?`)) return;
+          try {
+            if (p2027_1) await api(`/admin/periods/${p2027_1.id}/`, "PATCH", { state: newState });
+            if (p2027_2) await api(`/admin/periods/${p2027_2.id}/`, "PATCH", { state: newState });
+            inform(`Fase actualizada a ${newState} correctamente`);
+            await refresh();
+          } catch (e) {
+            setError(explain(e));
+          }
+        };
+
         return (
         <div className="panel spaced">
           <span className="eyebrow">CENTRO DE CONTROL DE MATRÍCULA</span>
@@ -1514,7 +1529,7 @@ function AdminPage({
               <p style={{marginBottom: '15px', color: 'var(--text-soft)'}}>Habilita la vista de cursos y horarios. Los alumnos podrán armar su horario sin poder matricularse aún.</p>
               <button 
                 className="btn outline"
-                onClick={() => alert("Función en desarrollo: Esto activará la pestaña de horarios y cruces para los alumnos.")}
+                onClick={() => void updatePhases("PRE_ENROLL")}
               >
                 Habilitar Vista de Horarios
               </button>
@@ -1525,7 +1540,7 @@ function AdminPage({
               <p style={{marginBottom: '15px', color: 'var(--text-soft)'}}>Abre la matrícula oficial 2027-I y II. Los alumnos podrán confirmar su selección según su orden de mérito.</p>
               <button 
                 className="btn primary"
-                onClick={() => alert("Función en desarrollo: Esto cambiará el estado de la plataforma a ENROLL para ambos ciclos.")}
+                onClick={() => void updatePhases("ENROLL")}
               >
                 Aperturar Matrícula 2027-I y II
               </button>
