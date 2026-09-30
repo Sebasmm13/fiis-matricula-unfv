@@ -79,6 +79,7 @@ class Period(models.Model):
     enroll_start = models.DateTimeField(null=True, blank=True)
     enroll_end = models.DateTimeField(null=True, blank=True)
     is_current = models.BooleanField(default=False)
+    convalidation_active = models.BooleanField(default=False)
 
     class Meta:
         constraints = [

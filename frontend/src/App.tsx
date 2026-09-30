@@ -391,6 +391,8 @@ function PasswordChange({
   );
 }
 
+interface Convalidation { active: boolean; done: boolean; matches?: any[]; unmatched?: any[]; }
+
 function StudentPage({
   page,
   me,
@@ -410,18 +412,22 @@ function StudentPage({
   const [busy, setBusy] = useState(false);
   const [filter, setFilter] = useState("");
   const [selected, setSelected] = useState<Record<number, number>>({});
+  const [selectedSemester, setSelectedSemester] = useState<number | null>(null);
+  const [convalidation, setConvalidation] = useState<Convalidation | null>(null);
   async function refresh() {
     try {
-      const [c, g, e, p] = await Promise.all([
+            const [c, g, e, p, conv] = await Promise.all([
         api<Catalog>("/catalog/"),
         api<Grade[]>("/grades/"),
         api<Enrollment[]>("/enrollments/"),
         api<{ course_id: number; section_id: number }[]>("/preselection/"),
+        api<Convalidation>("/me/convalidation/").catch(() => null),
       ]);
       setCatalog(c);
       setGrades(g);
       setEnrollments(e);
       setPre(p);
+      setConvalidation(conv);
       setSelected(
         Object.fromEntries(p.map((x) => [x.course_id, x.section_id])),
       );
@@ -434,6 +440,14 @@ function StudentPage({
   }, []);
   const sections = catalog?.sections || [];
   const courses = catalog?.courses || [];
+  
+  const activeElectiveTrack = useMemo(() => {
+    const passed = courses.find((c) => c.passed && c.elective_track);
+    if (passed) return passed.elective_track;
+    const selecting = courses.find((c) => selected[c.id] && c.elective_track);
+    return selecting?.elective_track || null;
+  }, [courses, selected]);
+
   const available = useMemo(
     () => courses.filter((c) => sections.some((s) => s.course_id === c.id)),
     [courses, sections],
@@ -506,7 +520,7 @@ function StudentPage({
         <div className="page-head">
           <span className="eyebrow">TU ESPACIO ACADÉMICO</span>
           <h1>
-            Hola, {me.name.split(" ")[0]} <span className="accent">✦</span>
+            Hola, {me.name.split(" ")[0]}
           </h1>
           <p>Organiza tu siguiente paso en Ingeniería de Sistemas.</p>
         </div>
@@ -618,10 +632,91 @@ function StudentPage({
         {error && <div className="alert error">{error}</div>}
       </>
     );
+  if (page === "matricula" && convalidation && convalidation.active && !convalidation.done) {
+    return (
+      <div className="center" style={{padding: '40px 20px', alignItems: 'flex-start'}}>
+        <div className="panel" style={{maxWidth: '800px', margin: '0 auto', textAlign: 'left', width: '100%'}}>
+          <span className="eyebrow" style={{color: '#d32f2f'}}>ACCIN REQUERIDA</span>
+          <h1 style={{marginTop: '0.5rem'}}>Proceso de Convalidacin Pendiente</h1>
+          <p style={{marginBottom: '2rem'}}>El administrador ha activado tu proceso de convalidacin automtica de cursos (Malla 2010 &#10140; Malla 2019). Por favor revisa la siguiente tabla de equivalencias y confirma para poder continuar con tu matrcula regular.</p>
+          
+          <h3 style={{marginBottom: '1rem'}}>Cursos Convalidados Exactos (1 a 1)</h3>
+          <table className="table" style={{width: '100%', marginBottom: '2rem'}}>
+            <thead>
+              <tr>
+                <th>Curso Aprobado (2010)</th>
+                <th>Nota</th>
+                <th>Equivalencia (2019)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(convalidation.matches || []).map((m: any, i: number) => (
+                <tr key={i}>
+                  <td>{m.old_code} - {m.old_name}</td>
+                  <td><Badge kind="good">{m.old_grade}</Badge></td>
+                  <td><strong>{m.new_code} - {m.new_name}</strong></td>
+                </tr>
+              ))}
+              {(!convalidation.matches || convalidation.matches.length === 0) && (
+                <tr><td colSpan={3} style={{textAlign: 'center', padding: '2rem'}}>No tienes cursos exactos aprobados para convalidar.</td></tr>
+              )}
+            </tbody>
+          </table>
+
+          <h3 style={{marginBottom: '1rem'}}>Cursos sin equivalencia exacta</h3>
+          <p style={{fontSize: '0.9rem', color: '#666', marginBottom: '1rem'}}>Estos cursos no tienen un par exacto en la malla 2019 y se mantendrn en tu historial sin convalidar.</p>
+          <table className="table" style={{width: '100%', marginBottom: '2rem'}}>
+            <thead>
+              <tr>
+                <th>Curso Aprobado (2010)</th>
+                <th>Nota</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(convalidation.unmatched || []).map((m: any, i: number) => (
+                <tr key={i}>
+                  <td>{m.old_code} - {m.old_name}</td>
+                  <td><Badge kind="good">{m.old_grade}</Badge></td>
+                  <td><Badge kind="neutral">Histrico</Badge></td>
+                </tr>
+              ))}
+              {(!convalidation.unmatched || convalidation.unmatched.length === 0) && (
+                <tr><td colSpan={3} style={{textAlign: 'center', padding: '2rem'}}>No hay cursos sin equivalencia.</td></tr>
+              )}
+            </tbody>
+          </table>
+
+          <div style={{borderTop: '1px solid #eee', paddingTop: '2rem', display: 'flex', justifyContent: 'flex-end', gap: '1rem'}}>
+             <button disabled={busy} className="btn primary" onClick={async () => {
+                 if (confirm("Ests seguro de aceptar esta convalidacin y migrar a la Malla 2019?")) {
+                     setBusy(true);
+                     try {
+                         await api("/me/convalidation/", "POST");
+                         inform("Convalidacin exitosa y migracin a Malla 2019 completada.");
+                         window.location.reload();
+                     } catch (e: any) {
+                         alert("Error: " + e.message);
+                     } finally {
+                         setBusy(false);
+                     }
+                 }
+             }}>{busy ? "Procesando..." : "Confirmar y Migrar a Malla 2019"}</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (page === "matricula")
     return (
       <>
-        <div className="page-head">
+        {me.plan_active === false && (
+          <div className="alert error" style={{ marginBottom: "2rem" }}>
+            <strong>⚠️ Acceso Restringido:</strong> Tu plan de estudios actual (Malla 2010) se encuentra inactivo. No puedes participar en el proceso de matrícula hasta que realices tu proceso de convalidación de cursos hacia el plan vigente.
+          </div>
+        )}
+        <div className={`page-head ${me.plan_active === false ? 'disabled-plan' : ''}`}>
           <span className="eyebrow">PERÍODO {catalog.period.code}</span>
           <h1>Planifica tu matrícula</h1>
           <p>
@@ -672,6 +767,7 @@ function StudentPage({
               .map((c) => {
                 const opts = sections.filter((s) => s.course_id === c.id);
                 const missing = prerequisites(c);
+                const blockedTrack = c.elective_track && activeElectiveTrack && c.elective_track !== activeElectiveTrack;
                 return (
                   <div className="course-card" key={c.id}>
                     <div className="course-heading">
@@ -696,7 +792,9 @@ function StudentPage({
                           </span>
                         </div>
                       </div>
-                      {missing.length ? (
+                      {blockedTrack ? (
+                        <Badge kind="warn">Otra mención</Badge>
+                      ) : missing.length ? (
                         <Badge kind="warn">Requisito pendiente</Badge>
                       ) : (
                         <Badge kind="good">Disponible</Badge>
@@ -721,6 +819,7 @@ function StudentPage({
                           disabled={
                             c.passed ||
                             !!missing.length ||
+                            !!blockedTrack ||
                             (catalog.period.status === "enroll" &&
                               s.available === 0)
                           }
@@ -848,41 +947,64 @@ function StudentPage({
             aprobación.
           </p>
         </div>
-        <div className="panel table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Código malla</th>
-                <th>Curso</th>
-                <th>Período</th>
-                <th>Créditos</th>
-                <th>Nota final</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {grades.map((g, i) => (
-                <tr key={i}>
-                  <td className="code">{g.code}</td>
-                  <td>
-                    <strong>{g.course}</strong>
-                  </td>
-                  <td>{g.period}</td>
-                  <td>{g.credits ?? "—"}</td>
-                  <td>
-                    <strong>{g.score.toFixed(1)}</strong>
-                  </td>
-                  <td>
-                    <Badge kind={g.passed ? "good" : "warn"}>
-                      {g.passed ? "Aprobado" : "No aprobado"}
-                    </Badge>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="historial-list" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          {grades.length > 0 && (() => {
+            const semesters = Array.from(new Set(grades.map((g) => g.semester))).sort((a, b) => a - b);
+            const activeSem = selectedSemester || Math.max(...semesters);
+            const semGrades = grades.filter((g) => g.semester === activeSem);
+            return (
+              <>
+                <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '10px' }}>
+                  {semesters.map((sem) => (
+                    <button
+                      key={sem}
+                      className={`btn ${activeSem === sem ? 'primary' : 'outline'}`}
+                      onClick={() => setSelectedSemester(sem)}
+                      style={{ borderRadius: '20px', whiteSpace: 'nowrap' }}
+                    >
+                      Ciclo {sem}
+                    </button>
+                  ))}
+                </div>
+                <div className="panel table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Código malla</th>
+                        <th>Curso</th>
+                        <th>Período</th>
+                        <th>Créditos</th>
+                        <th>Nota final</th>
+                        <th>Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {semGrades.map((g, i) => (
+                        <tr key={i}>
+                          <td className="code">{g.code}</td>
+                          <td>
+                            <strong>{g.course}</strong>
+                          </td>
+                          <td>{g.period === "HISTORICO" ? `Ciclo ${["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"][g.semester - 1] || g.semester}` : g.period}</td>
+                          <td>{g.credits ?? "—"}</td>
+                          <td>
+                            <strong>{g.score.toFixed(1)}</strong>
+                          </td>
+                          <td>
+                            <Badge kind={g.passed ? "good" : "warn"}>
+                              {g.passed ? "Aprobado" : "No aprobado"}
+                            </Badge>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            );
+          })()}
           {!grades.length && (
-            <div className="empty">Todavía no hay notas registradas.</div>
+            <div className="empty panel">Todavía no hay notas registradas.</div>
           )}
         </div>
       </>
@@ -894,7 +1016,14 @@ function StudentPage({
         <h1>Mi malla curricular</h1>
         <p>Consulta asignaturas, créditos y prerrequisitos de tu plan.</p>
       </div>
-      <div className="semester-grid">
+
+      {me.plan_active === false && (
+        <div className="alert error">
+          <strong>⚠️ Malla Inactiva:</strong> Tu plan de estudios ya no se encuentra vigente. Por favor, realiza el proceso de convalidación para reactivar tu matrícula.
+        </div>
+      )}
+
+      <div className={`semester-grid ${me.plan_active === false ? 'disabled-plan' : ''}`}>
         {Array.from(new Set(courses.map((c) => c.semester))).map((sem) => (
           <section className="panel semester" key={sem}>
             <div className="semester-top">
@@ -1293,17 +1422,7 @@ function AdminPage({
       )}
       {page === "inicio" && (
         <>
-          {demand && (
-            <div
-              className={`admin-notification ${demand.total_students ? "active" : ""}`}
-            >
-              <BarChart3 size={22} />
-              <div>
-                <strong>Mensaje de demanda de prematrícula</strong>
-                <p>{demand.notification}</p>
-              </div>
-            </div>
-          )}
+
           <div className="stat-grid">
             <Stat
               label="PERÍODO ACTUAL"
@@ -1330,16 +1449,14 @@ function AdminPage({
           </div>
           <div className="columns">
             <div className="panel">
-              <span className="eyebrow">PLANIFICACIÓN</span>
-              <h2>Prematrícula del período</h2>
+              <span className="eyebrow">ESTADO MATRÍCULA</span>
+              <h2>Alumnos matriculados</h2>
               <p>
-                Las preferencias indican cuánta demanda tiene cada curso. La
-                estimación de salones utiliza la capacidad indicada en el
-                reporte.
+                Total de alumnos que han concretado su matrícula anual 2027-I y II.
               </p>
               <div className="big-metric">
-                {demand?.total_students || 0}
-                <span> alumnos con preferencias</span>
+                {data.students.length}
+                <span> alumnos matriculados</span>
               </div>
             </div>
             <div className="panel">
@@ -1357,106 +1474,86 @@ function AdminPage({
           </div>
         </>
       )}
-      {page === "admin" && (
-        <>
-          <div className="columns">
-            <div className="panel">
-              <span className="eyebrow">CALENDARIO</span>
-              <h2>Períodos académicos</h2>
-              <p>
-                Activa la prematrícula para medir demanda y luego abre la
-                matrícula para asignar vacantes.
-              </p>
-              {data.periods.map((p) => (
-                <div className="period-row" key={p.id}>
-                  <div>
-                    <strong>{p.code}</strong>
-                    <small>
-                      {p.is_current ? "Período actual" : "Período histórico"} ·
-                      máximo {p.max_credits} créditos
-                    </small>
-                  </div>
-                  <select
-                    value={p.status}
+      {page === "admin" && (() => {
+        const currentPeriod = data.periods.find(p => p.is_current);
+        return (
+        <div className="panel spaced">
+          <span className="eyebrow">CENTRO DE CONTROL DE MATRÍCULA</span>
+          <h2>Apertura Anual 2027</h2>
+          <p>
+            Desde aquí podrás habilitar la fase previa de revisión de horarios y la matrícula oficial anual para los ciclos 2027-I y 2027-II.
+          </p>
+          
+          <div style={{ display: 'flex', gap: '20px', marginTop: '20px', flexWrap: 'wrap' }}>
+            
+            <div className="panel" style={{ flex: 1, minWidth: '300px', border: '1px solid var(--border)', background: 'var(--surface)' }}>
+              <h3>Fase 0: Migración y Convalidación</h3>
+              <p style={{marginBottom: '15px', color: 'var(--text-soft)'}}>Activa el proceso de convalidación obligatoria para los alumnos rezagados de la Malla 2010.</p>
+              {currentPeriod && (
+                <label style={{display: 'flex', alignItems: 'center', gap: '10px', fontWeight: 'bold', cursor: 'pointer', padding: '10px', background: 'var(--surface-hover)', borderRadius: '8px'}}>
+                  <input
+                    type="checkbox"
+                    style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                    checked={currentPeriod.convalidation_active || false}
                     onChange={(e) =>
                       void submit(
-                        `/admin/periods/${p.id}/`,
+                        `/admin/periods/${currentPeriod.id}/`,
                         "PATCH",
-                        { status: e.target.value },
-                        "Etapa actualizada",
+                        { convalidation_active: e.target.checked },
+                        "Convalidación " + (e.target.checked ? "activada" : "desactivada"),
                       )
                     }
-                  >
-                    <option value="draft">Borrador</option>
-                    <option value="pre">Prematrícula</option>
-                    <option value="enroll">Matrícula</option>
-                    <option value="closed">Cerrado</option>
-                  </select>
-                  {!p.is_current && (
-                    <button
-                      className="btn outline"
-                      onClick={() =>
-                        void submit(
-                          `/admin/periods/${p.id}/`,
-                          "PATCH",
-                          { is_current: true },
-                          "Período activado",
-                        )
-                      }
-                    >
-                      Activar
-                    </button>
-                  )}
-                </div>
-              ))}
-              <NewPeriod submit={submit} />
-              <NewPlan plans={data.plans} submit={submit} />
+                  />
+                  Habilitar Convalidación 2010
+                </label>
+              )}
             </div>
-            <div className="panel">
-              <span className="eyebrow">PLAN DE ESTUDIOS</span>
-              <h2>Cursos y horas académicas</h2>
-              <p>
-                Las horas teóricas y prácticas no figuran separadas en los JSON.
-                Regístralas aquí tras verificarlas.
-              </p>
-              <input
-                placeholder="Buscar curso de la malla..."
-                value={courseSearch}
-                onChange={(e) => setCourseSearch(e.target.value)}
-              />
-              <div className="scroll-list">
-                {data.courses
-                  .filter((c) =>
-                    `${c.code} ${c.name}`
-                      .toLowerCase()
-                      .includes(courseSearch.toLowerCase()),
-                  )
-                  .slice(0, 18)
-                  .map((c) => (
-                    <CourseEditor
-                      key={c.id}
-                      course={c}
-                      courses={data.courses}
-                      onSave={(body) =>
-                        submit(
-                          `/admin/courses/${c.id}/`,
-                          "PATCH",
-                          body,
-                          "Curso actualizado",
-                        )
-                      }
-                    />
-                  ))}
-              </div>
+
+            <div className="panel" style={{ flex: 1, minWidth: '300px', border: '1px solid var(--border)', background: 'var(--surface)' }}>
+              <h3>Fase 1: Pre-Matrícula</h3>
+              <p style={{marginBottom: '15px', color: 'var(--text-soft)'}}>Habilita la vista de cursos y horarios. Los alumnos podrán armar su horario sin poder matricularse aún.</p>
+              <button 
+                className="btn outline"
+                onClick={() => alert("Función en desarrollo: Esto activará la pestaña de horarios y cruces para los alumnos.")}
+              >
+                Habilitar Vista de Horarios
+              </button>
+            </div>
+            
+            <div className="panel" style={{ flex: 1, minWidth: '300px', border: '1px solid var(--border)', background: 'var(--surface)' }}>
+              <h3>Fase 2: Matrícula Oficial</h3>
+              <p style={{marginBottom: '15px', color: 'var(--text-soft)'}}>Abre la matrícula oficial 2027-I y II. Los alumnos podrán confirmar su selección según su orden de mérito.</p>
+              <button 
+                className="btn primary"
+                onClick={() => alert("Función en desarrollo: Esto cambiará el estado de la plataforma a ENROLL para ambos ciclos.")}
+              >
+                Aperturar Matrícula 2027-I y II
+              </button>
             </div>
           </div>
-          <div className="panel spaced">
-            <span className="eyebrow">NUEVA ASIGNATURA</span>
-            <h2>Agregar curso al plan</h2>
-            <NewCourse plans={data.plans} submit={submit} />
+
+          <div style={{ marginTop: '40px' }} className="panel">
+            <span className="eyebrow">PREPARATIVOS FUTUROS</span>
+            <h2>Adjuntar nueva malla curricular</h2>
+            <p style={{ color: 'var(--text-soft)', marginBottom: '15px' }}>
+              Utiliza esta opción únicamente cuando se apruebe y publique oficialmente un nuevo plan de estudios (ej. Malla 2030).
+            </p>
+            
+            <label style={{ display: 'inline-block', padding: '30px 20px', background: 'var(--surface)', border: '2px dashed var(--border)', borderRadius: '12px', cursor: 'not-allowed', color: 'var(--text-soft)', textAlign: 'center', width: '100%', maxWidth: '400px', opacity: 0.7 }}>
+              <span style={{ display: 'block', fontSize: '1.5rem', marginBottom: '8px' }}>📁</span>
+              <strong style={{ display: 'block', fontSize: '1.1rem', marginBottom: '4px' }}>Seleccionar archivo JSON</strong>
+              <small>Arrastra tu archivo aquí o haz clic para explorar</small>
+              <input type="file" disabled style={{ display: 'none' }} />
+            </label>
+            
+            <br />
+            <button className="btn outline" disabled style={{ marginTop: '15px' }}>
+              Subir y Procesar Malla
+            </button>
           </div>
-        </>
-      )}
+        </div>
+        );
+      })()}
       {page === "oferta" && (
         <>
           <div className="panel spaced">

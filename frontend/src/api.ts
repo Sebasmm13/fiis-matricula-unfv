@@ -10,6 +10,7 @@ export interface Identity {
   must_change_password: boolean;
   student_code?: string;
   plan?: string;
+  plan_active?: boolean;
   period?: { id: number; code: string; status: string; max_credits: number };
 }
 export interface Meeting {
@@ -74,6 +75,7 @@ export interface Grade {
   score: number;
   passed: boolean;
   credits: number | null;
+  semester: number;
 }
 export interface AdminData {
   periods: {
@@ -82,6 +84,7 @@ export interface AdminData {
     status: string;
     max_credits: number;
     is_current: boolean;
+    convalidation_active?: boolean;
   }[];
   plans: { id: number; name: string; active: boolean }[];
   courses: Course[];

@@ -343,10 +343,86 @@ class Me(APIView):
             student = need_student(request.user)
             data["student_code"] = student.student_code
             data["plan"] = student.plan.name
+            data["plan_active"] = student.plan.active
         return Response(data)
 
 
+
+CONVALIDATION_MAP = {
+    "2C0187": "02", "2A0124": "03", "380103": "07", "380165": "15",
+    "5B0110": "19", "3A0014": "22", "3B0166": "23", "380170": "30",
+    "8E0035": "16", "880109": "24", "8E0036": "25", "880116": "08",
+    "880073": "14", "600037": "21", "780192": "26", "600006": "28",
+    "8F0123": "29", "780184": "32", "SA0063": "33", "780197": "34",
+    "8F0127": "35", "8E0003": "36", "7A0472": "39", "880068": "40"
+}
+
+class ConvalidationView(APIView):
+    def get(self, request):
+        student = need_student(request.user)
+        period = Period.objects.filter(is_current=True).first()
+        if not period or not period.convalidation_active:
+            return Response({"active": False})
+            
+        if student.plan.name.startswith("Ingenier"):
+            return Response({"active": True, "done": True})
+
+        grades = FinalGrade.objects.filter(student=student, status='Aprobado').select_related('course')
+        
+        matches, unmatched = [], []
+        plan_2019 = Plan.objects.filter(name__icontains="adjunta").first()
+        if not plan_2019: return Response({"error": "Plan 2019 no encontrado"}, status=500)
+            
+        courses_2019 = {c.curricular_code: c for c in Course.objects.filter(plan=plan_2019)}
+
+        for fg in grades:
+            code_10 = fg.course.curricular_code
+            if code_10 in CONVALIDATION_MAP:
+                code_19 = CONVALIDATION_MAP[code_10]
+                if code_19 in courses_2019:
+                    c19 = courses_2019[code_19]
+                    matches.append({
+                        "old_code": code_10, "old_name": fg.course.name, "old_grade": fg.grade,
+                        "new_code": c19.curricular_code, "new_name": c19.name
+                    })
+                else: unmatched.append({"old_code": code_10, "old_name": fg.course.name, "old_grade": fg.grade})
+            else: unmatched.append({"old_code": code_10, "old_name": fg.course.name, "old_grade": fg.grade})
+                
+        return Response({"active": True, "done": False, "matches": matches, "unmatched": unmatched})
+
+    def post(self, request):
+        student = need_student(request.user)
+        period = Period.objects.filter(is_current=True).first()
+        if not period or not period.convalidation_active:
+            return Response({"error": "Convalidation not active"}, status=400)
+            
+        if student.plan.name.startswith("Ingenier"):
+            return Response({"error": "Already migrated"}, status=400)
+
+        with transaction.atomic():
+            plan_2019 = Plan.objects.filter(name__icontains="adjunta").first()
+            courses_2019 = {c.curricular_code: c for c in Course.objects.filter(plan=plan_2019)}
+            
+            grades = FinalGrade.objects.filter(student=student, status='Aprobado').select_related('course')
+            for fg in grades:
+                code_10 = fg.course.curricular_code
+                if code_10 in CONVALIDATION_MAP:
+                    code_19 = CONVALIDATION_MAP[code_10]
+                    if code_19 in courses_2019:
+                        c19 = courses_2019[code_19]
+                        FinalGrade.objects.update_or_create(
+                            student=student, course=c19, period=fg.period,
+                            defaults={"grade": fg.grade, "status": "Aprobado"}
+                        )
+            
+            student.plan = plan_2019
+            student.save()
+            audit(request.user, "Convalidation Done", student, detail={"plan": plan_2019.name})
+
+        return Response({"success": True})
+
 class Catalog(APIView):
+
     def get(self, request):
         student = need_student(request.user)
         period = current_period()
@@ -471,6 +547,7 @@ class Grades(APIView):
                     "score": float(g.score),
                     "passed": g.passed,
                     "credits": g.course.credits,
+                    "semester": g.course.semester,
                 }
                 for g in rows
             ]
@@ -487,6 +564,7 @@ class AdminData(APIView):
                 "status",
                 "max_credits",
                 "is_current",
+                "convalidation_active",
                 "pre_start",
                 "pre_end",
                 "enroll_start",
@@ -591,6 +669,8 @@ class AdminPeriod(APIView):
         if request.data.get("is_current") is True:
             Period.objects.filter(is_current=True).exclude(pk=pk).update(is_current=False)
             obj.is_current = True
+        if "convalidation_active" in request.data:
+            obj.convalidation_active = bool(request.data["convalidation_active"])
         obj.save()
         audit(request.user, "periodo.actualizado", obj)
         return Response({"ok": True})
@@ -960,7 +1040,15 @@ class AdminGrade(APIView):
         course = Course.objects.filter(pk=request.data.get("course_id")).first()
         period = Period.objects.filter(pk=request.data.get("period_id")).first()
         if not student or not course or not period or student.plan_id != course.plan_id:
-            raise ValidationError("Alumno, curso o período inválido.")
+            raise ValidationError("Alumno, curso o perodo invlido.")
+        
+        missing_reqs = []
+        for req in course.prerequisites.all():
+            if not FinalGrade.objects.filter(student=student, course=req, passed=True).exists():
+                missing_reqs.append(req.curricular_code)
+        
+        if missing_reqs:
+            raise ValidationError(f"No se puede asignar nota. El alumno no ha aprobado los prerrequisitos: {', '.join(missing_reqs)}")
         try:
             from decimal import Decimal
 

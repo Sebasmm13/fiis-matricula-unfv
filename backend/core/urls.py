@@ -12,6 +12,7 @@ urlpatterns = [
     path("auth/logout/", views.logout_view),
     path("auth/role/", views.SelectRole.as_view()),
     path("me/", views.Me.as_view()),
+    path("me/convalidation/", views.ConvalidationView.as_view()),
     path("profile/photo/", views.MyPhoto.as_view()),
     path("teacher/sections/", views.TeacherSections.as_view()),
     path("teacher/report/pdf/", views.TeacherReport.as_view()),

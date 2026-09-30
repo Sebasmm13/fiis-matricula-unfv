@@ -56,7 +56,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 if os.environ.get("DATABASE_URL") and not os.environ.get("DJANGO_USE_SQLITE"):
     DATABASES = {
-        "default": dj_database_url.config(conn_max_age=60, conn_health_checks=True),
+        "default": dj_database_url.config(conn_max_age=0, conn_health_checks=True),
     }
 else:
     # SQLite solamente para ejecutar pruebas sin servidor PostgreSQL.
