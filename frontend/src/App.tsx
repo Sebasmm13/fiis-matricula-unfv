@@ -1349,6 +1349,7 @@ function AdminPage({
   const [error, setError] = useState("");
   const [courseSearch, setCourseSearch] = useState("");
   const [sectionSearch, setSectionSearch] = useState("");
+  const [ofertaPeriod, setOfertaPeriod] = useState("2027-2");
   const [link, setLink] = useState<Record<number, number>>({});
   async function refresh() {
     try {
@@ -1563,13 +1564,17 @@ function AdminPage({
               Agrega una alternativa de profesor, horario y salón para un curso.
             </p>
             <NewSection data={data} submit={submit} />
-            <NewTeacher teachers={data.teachers} submit={submit} />
+
           </div>
           <div className="panel">
             <div className="row-between">
               <div>
                 <span className="eyebrow">SECCIONES CARGADAS</span>
                 <h2>Oferta y equivalencias</h2>
+                  <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                    <button className={ofertaPeriod === "2027-1" ? "btn primary" : "btn"} onClick={() => setOfertaPeriod("2027-1")}>2027-1</button>
+                    <button className={ofertaPeriod === "2027-2" ? "btn primary" : "btn"} onClick={() => setOfertaPeriod("2027-2")}>2027-2</button>
+                  </div>
               </div>
               <input
                 className="search-short"
@@ -1591,6 +1596,7 @@ function AdminPage({
                 </thead>
                 <tbody>
                   {data.sections
+                    .filter((s) => s.period === ofertaPeriod)
                     .filter((s) =>
                       `${s.course_name} ${s.teacher} ${s.period}`
                         .toLowerCase()
@@ -1810,21 +1816,14 @@ function AdminPage({
       )}
       {page === "alumnos" && (
         <>
-          <div className="columns">
-            <div className="panel">
-              <span className="eyebrow">ALTA</span>
-              <h2>Nuevo alumno</h2>
-              <NewStudent plans={data.plans} submit={submit} />
-            </div>
-            <div className="panel">
-              <span className="eyebrow">CALIFICACIONES</span>
-              <h2>Registrar o rectificar nota</h2>
-              <p>
-                La nota final se registra por alumno, curso y período; cada
-                cambio queda auditado.
-              </p>
-              <NewGrade data={data} submit={submit} />
-            </div>
+          <div className="panel spaced">
+            <span className="eyebrow">CALIFICACIONES</span>
+            <h2>Registrar o rectificar nota</h2>
+            <p>
+              La nota final se registra por alumno, curso y período; cada
+              cambio queda auditado.
+            </p>
+            <NewGrade data={data} submit={submit} />
           </div>
           <div className="panel spaced">
             <h2>Alumnos registrados</h2>
@@ -2227,7 +2226,7 @@ function NewSection({
           value={period}
           onChange={(e) => setPeriod(Number(e.target.value))}
         >
-          {data.periods.map((p) => (
+          {data.periods.filter((p) => ["HISTORICO", "2026-1", "2026-2"].includes(p.code)).map((p) => (
             <option key={p.id} value={p.id}>
               {p.code}
             </option>
@@ -2494,7 +2493,7 @@ function NewGrade({
           value={period}
           onChange={(e) => setPeriod(Number(e.target.value))}
         >
-          {data.periods.map((p) => (
+          {data.periods.filter((p) => ["HISTORICO", "2026-1", "2026-2"].includes(p.code)).map((p) => (
             <option value={p.id} key={p.id}>
               {p.code}
             </option>
