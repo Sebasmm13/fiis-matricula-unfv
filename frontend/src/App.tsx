@@ -527,7 +527,7 @@ function StudentPage({
         <div className="stat-grid">
           <Stat
             label="PERÍODO ACTUAL"
-            value={`${catalog.period.code.substring(0,4)}-1 y ${catalog.period.code.substring(0,4)}-2`}
+            value={catalog.period.code}
             note={
               catalog.period.status === "pre"
                 ? "Prematrícula abierta"
@@ -717,7 +717,7 @@ function StudentPage({
           </div>
         )}
         <div className={`page-head ${me.plan_active === false ? 'disabled-plan' : ''}`}>
-          <span className="eyebrow">AÑO ACADÉMICO {catalog.period.code.substring(0,4)}</span>
+          <span className="eyebrow">AÑO ACADÉMICO {catalog.period.code}</span>
           <h1>Planifica tu matrícula</h1>
           <p>
             Compara secciones, docentes, vacantes y horarios antes de enviar tu
@@ -745,7 +745,7 @@ function StudentPage({
             </span>
           </div>
           <Badge kind={catalog.period.status === "enroll" ? "good" : "blue"}>
-            {catalog.period.code.substring(0,4)}
+            {catalog.period.code}
           </Badge>
         </div>
         <div className="search">
@@ -1457,7 +1457,7 @@ function AdminPage({
               <span className="eyebrow">ESTADO MATRÍCULA</span>
               <h2>Alumnos matriculados</h2>
               <p>
-                Total de alumnos que han concretado su matrícula anual 2027-I y II.
+                Total de alumnos que han concretado su matrícula en {current?.code}.
               </p>
               <div className="big-metric">
                 {data.students.length}
@@ -1538,9 +1538,15 @@ function AdminPage({
               <p style={{marginBottom: '15px', color: 'var(--text-soft)'}}>Habilita la vista de cursos y horarios. Los alumnos podrán armar su horario sin poder matricularse aún.</p>
               <button 
                 className={`btn ${currentPeriod?.status === "pre" ? "outline" : "primary"}`}
-                onClick={() => setShowPhaseConfirm(currentPeriod?.status === "pre" ? "DRAFT" : "PRE_ENROLL")}
+                onClick={() => {
+                  if (currentPeriod?.status === "pre") {
+                    updatePhases("DRAFT");
+                  } else {
+                    updatePhases("PRE_ENROLL");
+                  }
+                }}
               >
-                {currentPeriod?.status === "pre" ? "Desactivar Pre-Matrícula (Volver a Borrador)" : "Activar Pre-Matrícula"}
+                {currentPeriod?.status === "pre" ? "✅ Pre-Matrícula Activa (Click para Desactivar)" : "Activar Pre-Matrícula"}
               </button>
             </div>
             
@@ -1549,9 +1555,15 @@ function AdminPage({
               <p style={{marginBottom: '15px', color: 'var(--text-soft)'}}>Abre la matrícula oficial. Los alumnos podrán confirmar su selección según su orden de mérito.</p>
               <button 
                 className={`btn ${currentPeriod?.status === "enroll" ? "outline" : "primary"}`}
-                onClick={() => setShowPhaseConfirm(currentPeriod?.status === "enroll" ? "DRAFT" : "ENROLL")}
+                onClick={() => {
+                  if (currentPeriod?.status === "enroll") {
+                    updatePhases("DRAFT");
+                  } else {
+                    updatePhases("ENROLL");
+                  }
+                }}
               >
-                {currentPeriod?.status === "enroll" ? "Cerrar Matrícula Oficial (Volver a Borrador)" : "Activar Matrícula Oficial"}
+                {currentPeriod?.status === "enroll" ? "✅ Matrícula Activa (Click para Cerrar)" : "Activar Matrícula Oficial"}
               </button>
             </div>
           </div>
