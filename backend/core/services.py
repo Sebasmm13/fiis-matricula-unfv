@@ -83,7 +83,8 @@ def eligible_course_ids(student, passed=None):
     pending = [course for course in courses if course.pk not in passed]
     if not pending:
         return set()
-    current_cycle = pending[0].semester
+    mandatory_pending = [course for course in pending if not course.elective_track]
+    current_cycle = mandatory_pending[0].semester if mandatory_pending else pending[0].semester
     return {
         course.pk
         for course in pending
