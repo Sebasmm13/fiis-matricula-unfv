@@ -80,16 +80,29 @@ def passed_course_ids(student):
     return passed | enrolled
 
 
+def student_official_cycle(student):
+    passed = passed_course_ids(student)
+    if not passed:
+        return 1
+    courses = list(Course.objects.filter(plan=student.plan, id__in=passed))
+    semesters = [c.semester for c in courses if c.semester is not None]
+    return max(semesters, default=1)
+
+
 def eligible_course_ids(student, passed=None):
-    """Cursos que el alumno puede llevar: su ciclo actual y uno superior (máximo 2 ciclos en total), considerando aprobados o su primer curso pendiente."""
+    """Cursos que el alumno puede llevar: su ciclo proyectado y uno superior (máximo 2 ciclos en total),
+    respetando la mención elegida previamente y los prerrequisitos en la ventana activa.
+    """
     passed = passed if passed is not None else passed_course_ids(student)
     courses = list(Course.objects.filter(plan=student.plan).prefetch_related("prerequisites").order_by("semester"))
     pending = [course for course in courses if course.pk not in passed]
     if not pending:
         return set()
-    
+
+    # Menciones elegidas previamente por el alumno
+    chosen_tracks = {c.elective_track for c in courses if c.pk in passed and c.elective_track}
+
     mandatory_pending = [course for course in pending if not course.elective_track]
-    # Determinar el primer ciclo pendiente
     first_pending_cycle = mandatory_pending[0].semester if mandatory_pending and mandatory_pending[0].semester else (pending[0].semester or 1)
 
     if passed:
@@ -98,16 +111,31 @@ def eligible_course_ids(student, passed=None):
         highest_passed_cycle = max(passed_semesters, default=0)
     else:
         highest_passed_cycle = 0
-        
-    # El ciclo actual es el mayor entre (último aprobado + 1) y el primer pendiente
+
     current_cycle = max(highest_passed_cycle + 1, first_pending_cycle)
     max_cycle = current_cycle + 1
-    
-    return {
-        course.pk
-        for course in pending
-        if (course.semester is None or course.semester <= max_cycle) and all(prerequisite.pk in passed for prerequisite in course.prerequisites.all())
-    }
+
+    eligible = set()
+    for course in pending:
+        # 1. Si el alumno ya eligió una mención, ignorar electivos de otras menciones
+        if course.elective_track and chosen_tracks and course.elective_track not in chosen_tracks:
+            continue
+
+        # 2. Respetar ventana máxima de 2 ciclos
+        if course.semester is not None and course.semester > max_cycle:
+            continue
+
+        # 3. Prerrequisitos: aprobados o pertenecientes al ciclo proyectado o inferior
+        reqs_ok = True
+        for p in course.prerequisites.all():
+            if p.pk not in passed and (p.semester is None or p.semester > current_cycle):
+                reqs_ok = False
+                break
+
+        if reqs_ok:
+            eligible.add(course.pk)
+
+    return eligible
 
 
 def check_course(student, course, passed, eligible=None):

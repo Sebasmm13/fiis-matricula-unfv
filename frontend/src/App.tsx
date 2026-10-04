@@ -249,8 +249,12 @@ export default function App() {
             <div className="account">
               <strong>{me.name}</strong>
               <small>
-                {admin ? "Administrador" : teacher ? "Docente" : "Alumno"} ·{" "}
-                {me.email}
+                {admin
+                  ? "Administrador"
+                  : teacher
+                    ? "Docente"
+                    : `Alumno (Ciclo ${me.official_cycle || "1"})`}{" "}
+                · {me.email}
               </small>
             </div>
           </div>

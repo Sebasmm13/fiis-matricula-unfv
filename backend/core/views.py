@@ -47,6 +47,7 @@ from .services import (
     require_id_list,
     save_preselection,
     section_info,
+    student_official_cycle,
     window_open,
 )
 
@@ -348,6 +349,7 @@ class Me(APIView):
             data["student_code"] = student.student_code
             data["plan"] = student.plan.name
             data["plan_active"] = student.plan.active
+            data["official_cycle"] = student_official_cycle(student)
         return Response(data)
 
 

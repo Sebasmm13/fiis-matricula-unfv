@@ -4,8 +4,18 @@ from pathlib import Path
 import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+for env_candidate in [BASE_DIR.parent / ".env", BASE_DIR / ".env"]:
+    if env_candidate.exists():
+        with open(env_candidate, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, v = line.split("=", 1)
+                    os.environ.setdefault(k.strip(), v.strip())
+
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "development-only-change-before-production")
-DEBUG = os.environ.get("DJANGO_DEBUG", "0") == "1"
+DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
 if not DEBUG and SECRET_KEY == "development-only-change-before-production":
     raise RuntimeError("DJANGO_SECRET_KEY es obligatoria fuera del entorno de desarrollo.")
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")

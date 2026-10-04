@@ -11,6 +11,7 @@ export interface Identity {
   student_code?: string;
   plan?: string;
   plan_active?: boolean;
+  official_cycle?: number;
   period?: { id: number; code: string; status: string; max_credits: number };
 }
 export interface Meeting {
