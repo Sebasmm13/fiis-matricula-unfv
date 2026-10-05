@@ -312,12 +312,13 @@ class Command(BaseCommand):
             if example and not Teacher.objects.filter(user=demo).exists():
                 example.teacher.user = demo
                 example.teacher.save(update_fields=["user"])
-            prev = Period.objects.get(code="2026-1")
-            for student in students:
-                for course in Course.objects.filter(plan=plan, semester=1):
-                    FinalGrade.objects.get_or_create(
-                        student=student, course=course, period=prev, defaults={"score": 15, "passed": True}
-                    )
+            prev = Period.objects.filter(code__in=["2027-1", "2026-1"]).first() or Period.objects.first()
+            if prev:
+                for student in students:
+                    for course in Course.objects.filter(plan=plan, semester=1):
+                        FinalGrade.objects.get_or_create(
+                            student=student, course=course, period=prev, defaults={"score": 15, "passed": True}
+                        )
             self.stdout.write(
                 "Cuentas DEMO y cuatro cuentas docentes activadas. Cambia sus contraseñas antes de usar datos reales."
             )
