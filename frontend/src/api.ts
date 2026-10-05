@@ -131,7 +131,7 @@ export interface TeacherData {
 }
 let csrfToken = "";
 export async function csrf() {
-  const r = await fetch("/api/auth/csrf/", { credentials: "same-origin" });
+  const r = await fetch("/api/auth/csrf/", { credentials: "include" });
   const d = await r.json();
   csrfToken = d.csrfToken;
   return csrfToken;
@@ -145,7 +145,7 @@ export async function api<T>(
   const request = () =>
     fetch("/api" + path, {
       method,
-      credentials: "same-origin",
+      credentials: "include",
       headers:
         body === undefined
           ? { "X-CSRFToken": csrfToken }
@@ -175,7 +175,7 @@ export async function api<T>(
 }
 export async function downloadReceipt(id: number, period: string) {
   const r = await fetch(`/api/enrollments/${id}/pdf/`, {
-    credentials: "same-origin",
+    credentials: "include",
   });
   if (!r.ok) throw Error("No se pudo descargar la constancia.");
   const blob = await r.blob();
@@ -192,7 +192,7 @@ export async function changePhoto(file?: File) {
   if (file) form.append("photo", file);
   const r = await fetch("/api/profile/photo/", {
     method: file ? "POST" : "DELETE",
-    credentials: "same-origin",
+    credentials: "include",
     headers: { "X-CSRFToken": csrfToken },
     body: file ? form : undefined,
   });
@@ -214,7 +214,7 @@ export async function downloadTeacherReport(
   const search = new URLSearchParams({ period });
   if (sectionId) search.set("section_id", String(sectionId));
   const r = await fetch(`/api/teacher/report/pdf/?${search}`, {
-    credentials: "same-origin",
+    credentials: "include",
   });
   if (!r.ok) throw Error("No se pudo descargar el reporte docente.");
   const url = URL.createObjectURL(await r.blob());
