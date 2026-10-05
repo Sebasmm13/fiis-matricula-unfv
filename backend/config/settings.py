@@ -14,8 +14,9 @@ for env_candidate in [BASE_DIR.parent / ".env", BASE_DIR / ".env"]:
                     k, v = line.split("=", 1)
                     os.environ.setdefault(k.strip(), v.strip())
 
+IS_RENDER = bool(os.environ.get("RENDER") or os.environ.get("RENDER_SERVICE_ID") or os.environ.get("RENDER_EXTERNAL_HOSTNAME"))
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "development-only-change-before-production")
-DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
+DEBUG = os.environ.get("DJANGO_DEBUG", "0" if IS_RENDER else "1") == "1"
 if not DEBUG and SECRET_KEY == "development-only-change-before-production":
     raise RuntimeError("DJANGO_SECRET_KEY es obligatoria fuera del entorno de desarrollo.")
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
@@ -94,7 +95,7 @@ STORAGES = {
 }
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SESSION_COOKIE_HTTPONLY = True
-if os.environ.get("RENDER_EXTERNAL_HOSTNAME") or not DEBUG or os.environ.get("DJANGO_SECURE_COOKIES", "0") == "1":
+if IS_RENDER or not DEBUG or os.environ.get("DJANGO_SECURE_COOKIES", "0") == "1":
     SESSION_COOKIE_SAMESITE = "None"
     CSRF_COOKIE_SAMESITE = "None"
     SESSION_COOKIE_SECURE = True
