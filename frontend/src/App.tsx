@@ -891,6 +891,11 @@ function StudentPage({
                           <Badge kind="blue">Prematrícula</Badge>
                         </button>
                       )}
+                      {opts.length === 0 && catalog.period.status !== "pre" && (
+                        <div className="info-box" style={{ margin: '8px 0', fontSize: '0.9rem' }}>
+                          <strong>Sin secciones en la oferta actual:</strong> Este curso pertenece a tu plan y cumples los requisitos, pero el administrador aún no ha asignado secciones de clase para este periodo.
+                        </div>
+                      )}
                     </div>
                     {opts.length < 2 && catalog.period.status !== "pre" && (
                       <div className="small-warning">
