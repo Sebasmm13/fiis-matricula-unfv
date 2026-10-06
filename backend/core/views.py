@@ -660,13 +660,22 @@ class AdminPeriod(APIView):
         obj = Period.objects.filter(pk=pk).first()
         if not obj:
             raise NotFound()
+        
+        # Sincronizar todos los periodos del mismo año (ej: 2027-1 y 2027-2) para la matrícula anual
+        year = obj.code[:4]
+        annual_periods = Period.objects.filter(code__startswith=year)
+
+        update_fields = {}
         if "status" in request.data:
             if request.data["status"] not in dict(Period._meta.get_field("status").choices):
                 raise ValidationError("Estado inválido.")
-            obj.status = request.data["status"]
+            update_fields["status"] = request.data["status"]
+
         if "max_credits" in request.data:
-            obj.max_credits = int_value(request.data["max_credits"], "max_credits", 1)
-        for field in ["pre_start", "pre_end", "enroll_start", "enroll_end"]:
+            update_fields["max_credits"] = int_value(request.data["max_credits"], "max_credits", 1)
+
+        date_fields = ["pre_start", "pre_end", "enroll_start", "enroll_end"]
+        for field in date_fields:
             if field in request.data:
                 from django.utils.dateparse import parse_datetime
 
@@ -678,13 +687,19 @@ class AdminPeriod(APIView):
                     from django.utils import timezone
 
                     parsed = timezone.make_aware(parsed)
-                setattr(obj, field, parsed)
+                update_fields[field] = parsed
+
         if request.data.get("is_current") is True:
-            Period.objects.filter(is_current=True).exclude(pk=pk).update(is_current=False)
+            Period.objects.filter(is_current=True).exclude(pk=obj.pk).update(is_current=False)
             obj.is_current = True
+            obj.save(update_fields=["is_current"])
+
         if "convalidation_active" in request.data:
-            obj.convalidation_active = bool(request.data["convalidation_active"])
-        obj.save()
+            update_fields["convalidation_active"] = bool(request.data["convalidation_active"])
+
+        if update_fields:
+            annual_periods.update(**update_fields)
+
         audit(request.user, "periodo.actualizado", obj)
         return Response({"ok": True})
 
