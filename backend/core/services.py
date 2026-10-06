@@ -90,8 +90,9 @@ def student_official_cycle(student):
 
 
 def eligible_course_ids(student, passed=None):
-    """Cursos que el alumno puede llevar: su ciclo proyectado y uno superior (máximo 2 ciclos en total),
-    respetando la mención elegida previamente y los prerrequisitos en la ventana activa.
+    """Cursos que el alumno puede llevar en el modelo de Matrícula Anual UNFV:
+    Su par de ciclos anuales proyectados (ej. 7mo + 8vo) o cursos pendientes de años anteriores
+    cuyos prerrequisitos de años anteriores hayan sido aprobados.
     """
     passed = passed if passed is not None else passed_course_ids(student)
     courses = list(Course.objects.filter(plan=student.plan).prefetch_related("prerequisites").order_by("semester"))
@@ -105,32 +106,29 @@ def eligible_course_ids(student, passed=None):
     mandatory_pending = [course for course in pending if not course.elective_track]
     first_pending_cycle = mandatory_pending[0].semester if mandatory_pending and mandatory_pending[0].semester else (pending[0].semester or 1)
 
-    if passed:
-        passed_courses = [course for course in courses if course.pk in passed]
-        passed_semesters = [c.semester for c in passed_courses if c.semester is not None]
-        highest_passed_cycle = max(passed_semesters, default=0)
-    else:
-        highest_passed_cycle = 0
-
-    current_cycle = max(highest_passed_cycle + 1, first_pending_cycle)
-    max_cycle = current_cycle + 1
+    # Determinar el par de ciclos anuales del alumno (ej: 1-2, 3-4, 5-6, 7-8, 9-10)
+    # El inicio del par anual siempre es un ciclo impar
+    annual_start_cycle = ((first_pending_cycle - 1) // 2) * 2 + 1
+    annual_max_cycle = annual_start_cycle + 1
 
     eligible = set()
     for course in pending:
-        # 1. Si el alumno ya eligió una mención, ignorar electivos de otras menciones
+        # 1. Ignorar electivos de menciones no elegidas
         if course.elective_track and chosen_tracks and course.elective_track not in chosen_tracks:
             continue
 
-        # 2. Respetar ventana máxima de 2 ciclos
-        if course.semester is not None and course.semester > max_cycle:
+        # 2. Respetar el límite del par anual activo (no permitir cursos de ciclos posteriores al par)
+        if course.semester is not None and course.semester > annual_max_cycle:
             continue
 
-        # 3. Prerrequisitos: aprobados o pertenecientes al ciclo proyectado o inferior
+        # 3. Evaluación de Prerrequisitos
         reqs_ok = True
         for p in course.prerequisites.all():
-            if p.pk not in passed and (p.semester is None or p.semester > current_cycle):
-                reqs_ok = False
-                break
+            if p.pk not in passed:
+                # Si el prerrequisito es de un año/par anterior y NO se aprobó, BLOQUEA este curso.
+                if p.semester is not None and p.semester < annual_start_cycle:
+                    reqs_ok = False
+                    break
 
         if reqs_ok:
             eligible.add(course.pk)
