@@ -650,7 +650,7 @@ class AdminPeriod(APIView):
         if Period.objects.filter(code=code).exists():
             raise ValidationError("El período ya existe.")
         period = Period.objects.create(
-            code=code, max_credits=int_value(request.data.get("max_credits", 24), "max_credits", 1)
+            code=code, max_credits=int_value(request.data.get("max_credits", 44), "max_credits", 1)
         )
         audit(request.user, "periodo.creado", period)
         return Response({"id": period.id}, status=201)

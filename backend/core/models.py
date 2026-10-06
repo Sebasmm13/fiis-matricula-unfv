@@ -73,7 +73,7 @@ class Period(models.Model):
         choices=[("draft", "Borrador"), ("pre", "Prematrícula"), ("enroll", "Matrícula"), ("closed", "Cerrado")],
         default="draft",
     )
-    max_credits = models.PositiveSmallIntegerField(default=24)
+    max_credits = models.PositiveSmallIntegerField(default=44)
     pre_start = models.DateTimeField(null=True, blank=True)
     pre_end = models.DateTimeField(null=True, blank=True)
     enroll_start = models.DateTimeField(null=True, blank=True)
