@@ -12,6 +12,7 @@ export interface Identity {
   plan?: string;
   plan_active?: boolean;
   official_cycle?: number;
+  has_enrollment?: boolean;
   period?: { id: number; code: string; status: string; max_credits: number };
 }
 export interface Meeting {

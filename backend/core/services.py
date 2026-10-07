@@ -141,7 +141,17 @@ def check_course(student, course, passed, eligible=None):
         raise ValidationError(f"{course.name} no pertenece al plan del alumno.")
     if course.pk in passed:
         raise ValidationError(f"{course.name} ya está aprobado.")
-    missing = [p.name for p in course.prerequisites.all() if p.pk not in passed]
+
+    courses = list(Course.objects.filter(plan=student.plan))
+    pending = [c for c in courses if c.pk not in passed]
+    mandatory_pending = [c for c in pending if not c.elective_track]
+    first_pending_cycle = mandatory_pending[0].semester if mandatory_pending and mandatory_pending[0].semester else (pending[0].semester if pending else 1)
+    annual_start_cycle = ((first_pending_cycle - 1) // 2) * 2 + 1
+
+    missing = [
+        p.name for p in course.prerequisites.all()
+        if p.pk not in passed and (p.semester is None or p.semester < annual_start_cycle)
+    ]
     if missing:
         raise ValidationError(f"Faltan prerrequisitos para {course.name}: {', '.join(missing)}.")
     eligible = eligible if eligible is not None else eligible_course_ids(student, passed)

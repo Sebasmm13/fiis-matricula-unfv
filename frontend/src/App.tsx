@@ -166,11 +166,15 @@ export default function App() {
             label: "Inicio",
             icon: <LayoutDashboard size={18} />,
           },
-          {
-            id: "matricula",
-            label: "Matrícula",
-            icon: <ClipboardList size={18} />,
-          },
+          ...(me.has_enrollment
+            ? []
+            : [
+                {
+                  id: "matricula" as Page,
+                  label: "Matrícula",
+                  icon: <ClipboardList size={18} />,
+                },
+              ]),
           {
             id: "historial",
             label: "Notas e historial",
@@ -489,8 +493,20 @@ function StudentPage({
             `${a.course_name} (${a.section}) y ${b.course_name} (${b.section})`,
         ),
     );
+  const annualStartCycle = useMemo(() => {
+    const pending = courses.filter((c) => !c.passed);
+    if (!pending.length) return 1;
+    const mandatory = pending.filter((c) => !c.elective_track);
+    const firstPending = mandatory.length ? (mandatory[0].semester || 1) : (pending[0].semester || 1);
+    return Math.floor((firstPending - 1) / 2) * 2 + 1;
+  }, [courses]);
+
   const prerequisites = (c: Course) =>
-    c.prerequisites.filter((p) => !courses.find((x) => x.id === p.id)?.passed);
+    c.prerequisites.filter((p) => {
+      const pCourse = courses.find((x) => x.id === p.id);
+      if (!pCourse || pCourse.passed) return false;
+      return pCourse.semester === null || pCourse.semester < annualStartCycle;
+    });
   async function action(kind: "pre" | "enroll") {
     setBusy(true);
     setError("");
@@ -914,7 +930,18 @@ function StudentPage({
           </div>
           <div className="selection">
             <div className="panel sticky">
-              <span className="eyebrow">TU SELECCIÓN</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span className="eyebrow">TU SELECCIÓN</span>
+                {picked.length > 0 && (
+                  <button
+                    className="text-button"
+                    style={{ fontSize: '0.8rem', color: '#d32f2f', cursor: 'pointer', padding: 0 }}
+                    onClick={() => setSelected({})}
+                  >
+                    Limpiar selección
+                  </button>
+                )}
+              </div>
               <h2>Horario elegido</h2>
               <p className="muted">
                 {picked.length} cursos · {credits} /{" "}

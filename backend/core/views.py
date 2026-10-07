@@ -350,6 +350,9 @@ class Me(APIView):
             data["plan"] = student.plan.name
             data["plan_active"] = student.plan.active
             data["official_cycle"] = student_official_cycle(student)
+            year = period.code[:4] if period else ""
+            annual_periods = Period.objects.filter(code__startswith=year) if year else []
+            data["has_enrollment"] = Enrollment.objects.filter(student=student, period__in=annual_periods).exists()
         return Response(data)
 
 
